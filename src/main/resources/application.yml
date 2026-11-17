@@ -1,0 +1,25 @@
+spring:
+  application:
+    name: hatocontrol
+  datasource:
+    url: ${BD_URL:jdbc:postgresql://localhost:5432/hatocontrol}
+    username: ${BD_USUARIO:hatocontrol}
+    password: ${BD_CONTRASENA:}
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate
+  mail:
+    host: ${CORREO_SERVIDOR:localhost}
+    port: ${CORREO_PUERTO:587}
+    username: ${CORREO_USUARIO:}
+    password: ${CORREO_CONTRASENA:}
+
+server:
+  servlet:
+    session:
+      timeout: 120m
+      cookie:
+        http-only: true
+        secure: true
+        same-site: lax
