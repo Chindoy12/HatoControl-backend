@@ -8,8 +8,38 @@ on:
 jobs:
   compilar:
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_DB: hatocontrol
+          POSTGRES_USER: hatocontrol
+          POSTGRES_PASSWORD: prueba-ci
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U hatocontrol"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      BD_URL: jdbc:postgresql://localhost:5432/hatocontrol
+      BD_USUARIO: hatocontrol
+      BD_CONTRASENA: prueba-ci
     steps:
       - uses: actions/checkout@v4
+      - name: Traer los scripts de la base de datos
+        uses: actions/checkout@v4
+        with:
+          repository: Chindoy12/HatoControl-db
+          path: bd
+      - name: Crear las tablas y cargar los datos de prueba
+        run: >
+          docker run --rm --network host -v "$PWD/bd:/proyecto"
+          flyway/flyway:11
+          -url=$BD_URL -user=$BD_USUARIO -password=$BD_CONTRASENA
+          -locations=filesystem:/proyecto/migraciones,filesystem:/proyecto/datos-prueba
+          migrate
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
