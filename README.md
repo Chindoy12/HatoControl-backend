@@ -71,4 +71,4 @@ Las credenciales se leen de variables de entorno y nunca se guardan en el reposi
 
 - `docs/historias-usuario/`: las 24 historias de usuario.
 - `docs/mockups/`: las 25 pantallas (P01–P25) y su relación con las HU.
-- `docs/vista-desarrollo-v6.png`: vista de desarrollo que coincide con este código.
+- `docs/vista-desarrollo-v7.png`: vista de desarrollo que coincide con este código.
