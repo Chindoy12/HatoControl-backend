@@ -30,6 +30,30 @@ src/main/java/com/hatocontrol/
 
 Las tablas las crea el repositorio [HatoControl-db](https://github.com/Chindoy12/HatoControl-db) con Flyway; aquí Hibernate solo valida que coincidan (`ddl-auto: validate`).
 
+## API
+
+Todas las rutas empiezan por `/api`. Sin sesión responden 401; las del ganadero, con otro rol, 403. Los errores llegan como `{"mensaje": "...", "campos": {...}}`.
+
+| Método y ruta | Qué hace | HU |
+| --- | --- | --- |
+| `GET /sesion` · `POST /sesion/ingreso` · `POST /sesion/salida` | sesión actual, ingresar, salir | HU_021 |
+| `POST /sesion/recuperacion` · `POST /sesion/recuperacion/{token}` | pedir enlace, crear contraseña nueva | HU_024 |
+| `POST /cuentas/fincas` | registrar finca y entrar | HU_020 |
+| `GET/POST /cuentas/administradores` · `POST …/desactivacion` · `POST …/contrasena` | administradores (solo ganadero) | HU_023 |
+| `GET /animales?filtro&sexo&proposito` · `POST /animales` | listar y registrar | HU_001, HU_002 |
+| `GET/PUT/DELETE /animales/{arete}` · `POST /animales/{arete}/engorde` | ficha, editar, eliminar, pasar a engorde | HU_003–005, HU_013, HU_015 |
+| `GET/POST /animales/{arete}/pesos` | historial con variaciones y nueva medición | HU_010, HU_011 |
+| `POST /sanitario/animales/{arete}/eventos` · `…/programadas` | evento realizado o actividad programada | HU_006, HU_008 |
+| `POST /sanitario/eventos/{id}/realizada?fechaRealizacion` | marcar realizada | HU_008 |
+| `GET /sanitario/animales/{arete}?tipo` · `GET /sanitario/proximas?dias` · `GET /sanitario/pendientes` | historial y actividades | HU_007, HU_009 |
+| `POST /partos` · `GET /partos/madres/{arete}` | parto con crías e historial reproductivo | HU_016, HU_017 |
+| `POST /leche` · `GET /leche/{arete}/promedios?periodo&fecha` | leche del día y promedios (SEMANA, MES, PARTO) | HU_018, HU_019 |
+| `GET /reportes/dashboard` · `POST /reportes` | dashboard (solo ganadero) y reportes | HU_012, HU_014 |
+
+## Pruebas
+
+`CriteriosAceptacionTest` usa la API como la aplicación web (cookies de sesión y token CSRF) contra PostgreSQL con los datos de prueba de HatoControl-db, y comprueba los criterios de aceptación de cada historia de usuario. GitHub Actions las ejecuta en cada cambio.
+
 ## Ejecutar en local
 
 Requiere Java 25, Maven 3.9 y un PostgreSQL con las tablas de HatoControl-db.
@@ -47,3 +71,4 @@ Las credenciales se leen de variables de entorno y nunca se guardan en el reposi
 
 - `docs/historias-usuario/`: las 24 historias de usuario.
 - `docs/mockups/`: las 25 pantallas (P01–P25) y su relación con las HU.
+- `docs/vista-desarrollo-v6.png`: vista de desarrollo que coincide con este código.
