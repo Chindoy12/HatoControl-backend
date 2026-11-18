@@ -1,4 +1,8 @@
 package com.hatocontrol.presentacion.dto;
 
-public record IngresoRequest(String correo, String contrasena) {
+import jakarta.validation.constraints.NotBlank;
+
+public record IngresoRequest(
+        @NotBlank(message = "Escribe tu correo.") String correo,
+        @NotBlank(message = "Escribe tu contraseña.") String contrasena) {
 }

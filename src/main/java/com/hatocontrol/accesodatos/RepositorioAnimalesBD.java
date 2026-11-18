@@ -16,21 +16,37 @@ public class RepositorioAnimalesBD implements IRepositorioAnimales {
 
     @Override
     public void guardar(Animal animal) {
-        throw new UnsupportedOperationException("Se implementa en la Fase 9");
+        if (animal.getId() == null) {
+            em.persist(animal);
+        } else {
+            em.merge(animal);
+        }
     }
 
     @Override
     public Optional<Animal> buscarPorArete(Long fincaId, String codigo) {
-        throw new UnsupportedOperationException("Se implementa en la Fase 9");
+        return em.createQuery("select a from Animal a where a.finca.id = :finca and upper(a.codigoArete) = upper(:codigo)", Animal.class)
+                .setParameter("finca", fincaId)
+                .setParameter("codigo", codigo)
+                .getResultStream().findFirst();
     }
 
+    /** El filtro busca en el arete y en el nombre; vacío o null lista todos los animales de la finca. */
     @Override
     public List<Animal> listar(Long fincaId, String filtro) {
-        throw new UnsupportedOperationException("Se implementa en la Fase 9");
+        String texto = filtro == null ? "" : filtro.trim().toLowerCase();
+        return em.createQuery("""
+                select a from Animal a where a.finca.id = :finca
+                and (:texto = '' or lower(a.codigoArete) like :patron or lower(coalesce(a.nombre, '')) like :patron)
+                order by a.codigoArete""", Animal.class)
+                .setParameter("finca", fincaId)
+                .setParameter("texto", texto)
+                .setParameter("patron", "%" + texto + "%")
+                .getResultList();
     }
 
     @Override
     public void eliminar(Animal animal) {
-        throw new UnsupportedOperationException("Se implementa en la Fase 9");
+        em.remove(em.contains(animal) ? animal : em.merge(animal));
     }
 }

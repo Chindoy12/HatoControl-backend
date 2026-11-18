@@ -15,11 +15,15 @@ public class RepositorioFincasBD implements IRepositorioFincas {
 
     @Override
     public void guardar(Finca finca) {
-        throw new UnsupportedOperationException("Se implementa en la Fase 9");
+        if (finca.getId() == null) {
+            em.persist(finca);
+        } else {
+            em.merge(finca);
+        }
     }
 
     @Override
     public Optional<Finca> buscarPorId(Long id) {
-        throw new UnsupportedOperationException("Se implementa en la Fase 9");
+        return Optional.ofNullable(em.find(Finca.class, id));
     }
 }

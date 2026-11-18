@@ -55,7 +55,7 @@ public class TokenRecuperacion {
         this.venceEn = venceEn;
     }
 
-    public boolean getUsado() {
+    public boolean isUsado() {
         return usado;
     }
 
