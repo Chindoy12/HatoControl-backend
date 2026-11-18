@@ -4,5 +4,6 @@ import com.hatocontrol.modelo.EstadoActividad;
 import com.hatocontrol.modelo.TipoEventoSanitario;
 import java.time.LocalDate;
 
-public record EventoSanitarioResponse(TipoEventoSanitario tipo, String descripcion, LocalDate fechaProgramada, LocalDate fechaRealizacion, EstadoActividad estado, String observaciones) {
+public record EventoSanitarioResponse(Long id, String codigoArete, String nombreAnimal, TipoEventoSanitario tipo, String descripcion,
+        LocalDate fechaProgramada, LocalDate fechaRealizacion, EstadoActividad estado, String observaciones) {
 }

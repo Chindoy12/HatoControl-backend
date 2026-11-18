@@ -3,28 +3,59 @@ package com.hatocontrol.presentacion;
 import com.hatocontrol.negocio.excepciones.AccesoDenegadoException;
 import com.hatocontrol.negocio.excepciones.RecursoNoEncontradoException;
 import com.hatocontrol.negocio.excepciones.ReglaNegocioException;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
-/** Convierte las excepciones del negocio en mensajes claros para el usuario (RNF03). */
+/**
+ * Convierte los errores en mensajes claros (RNF03): {"mensaje": "...", "campos": {"campo": "qué corregir"}}.
+ * Ninguna respuesta de error incluye contraseñas ni detalles internos.
+ */
 @RestControllerAdvice
 public class ManejadorExcepciones {
 
     @ExceptionHandler(RecursoNoEncontradoException.class)
-    public ResponseEntity<Map<String, String>> manejarNoEncontrado(RecursoNoEncontradoException e) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("mensaje", e.getMessage()));
+    public ResponseEntity<Map<String, Object>> manejarNoEncontrado(RecursoNoEncontradoException e) {
+        return respuesta(HttpStatus.NOT_FOUND.value(), e.getMessage(), Map.of());
     }
 
     @ExceptionHandler(ReglaNegocioException.class)
-    public ResponseEntity<Map<String, String>> manejarReglaNegocio(ReglaNegocioException e) {
-        return ResponseEntity.status(422).body(Map.of("mensaje", e.getMessage()));
+    public ResponseEntity<Map<String, Object>> manejarReglaNegocio(ReglaNegocioException e) {
+        return respuesta(422, e.getMessage(), Map.of());
     }
 
     @ExceptionHandler(AccesoDenegadoException.class)
-    public ResponseEntity<Map<String, String>> manejarAccesoDenegado(AccesoDenegadoException e) {
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("mensaje", e.getMessage()));
+    public ResponseEntity<Map<String, Object>> manejarAccesoDenegado(AccesoDenegadoException e) {
+        return respuesta(HttpStatus.FORBIDDEN.value(), e.getMessage(), Map.of());
+    }
+
+    /** Campos que faltan o vienen con un formato que no se puede leer. */
+    @ExceptionHandler({MethodArgumentNotValidException.class, HttpMessageNotReadableException.class,
+            MethodArgumentTypeMismatchException.class, MissingServletRequestParameterException.class})
+    public ResponseEntity<Map<String, Object>> manejarValidacion(Exception e) {
+        if (e instanceof MethodArgumentNotValidException invalido) {
+            Map<String, String> campos = new LinkedHashMap<>();
+            invalido.getBindingResult().getFieldErrors()
+                    .forEach(error -> campos.putIfAbsent(error.getField(), error.getDefaultMessage()));
+            String primero = campos.values().stream().findFirst().orElse("Revisa los datos.");
+            return respuesta(HttpStatus.BAD_REQUEST.value(), primero, campos);
+        }
+        return respuesta(HttpStatus.BAD_REQUEST.value(), "Revisa los datos: hay un valor vacío o con formato inválido.", Map.of());
+    }
+
+    private static ResponseEntity<Map<String, Object>> respuesta(int estado, String mensaje, Map<String, String> campos) {
+        Map<String, Object> cuerpo = new LinkedHashMap<>();
+        cuerpo.put("mensaje", mensaje);
+        if (!campos.isEmpty()) {
+            cuerpo.put("campos", campos);
+        }
+        return ResponseEntity.status(estado).body(cuerpo);
     }
 }

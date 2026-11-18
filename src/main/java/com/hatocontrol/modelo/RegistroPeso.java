@@ -51,4 +51,11 @@ public class RegistroPeso {
     public void setFechaMedicion(LocalDate fechaMedicion) {
         this.fechaMedicion = fechaMedicion;
     }
+
+    // ---- Comportamiento de la vista lógica ----
+
+    /** Ganancia (positiva) o pérdida (negativa) respecto a la medición anterior. */
+    public double diferenciaCon(RegistroPeso anterior) {
+        return pesoKg - anterior.getPesoKg();
+    }
 }

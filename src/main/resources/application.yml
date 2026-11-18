@@ -23,3 +23,7 @@ server:
         http-only: true
         secure: true
         same-site: lax
+
+hatocontrol:
+  url-frontend: ${URL_FRONTEND:http://localhost:5173}
+  correo-remitente: ${CORREO_REMITENTE:no-responder@hatocontrol.example}

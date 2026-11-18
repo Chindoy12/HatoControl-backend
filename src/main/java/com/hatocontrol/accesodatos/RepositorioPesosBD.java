@@ -15,16 +15,24 @@ public class RepositorioPesosBD implements IRepositorioPesos {
 
     @Override
     public void guardar(RegistroPeso registro) {
-        throw new UnsupportedOperationException("Se implementa en la Fase 9");
+        if (registro.getId() == null) {
+            em.persist(registro);
+        } else {
+            em.merge(registro);
+        }
     }
 
+    /** Mediciones del animal de la más antigua a la más reciente. */
     @Override
     public List<RegistroPeso> historial(Long animalId) {
-        throw new UnsupportedOperationException("Se implementa en la Fase 9");
+        return em.createQuery("select r from RegistroPeso r where r.animal.id = :animal order by r.fechaMedicion, r.id", RegistroPeso.class)
+                .setParameter("animal", animalId)
+                .getResultList();
     }
 
     @Override
     public boolean existenPara(Long animalId) {
-        throw new UnsupportedOperationException("Se implementa en la Fase 9");
+        return !em.createQuery("select r.id from RegistroPeso r where r.animal.id = :animal", Long.class)
+                .setParameter("animal", animalId).setMaxResults(1).getResultList().isEmpty();
     }
 }

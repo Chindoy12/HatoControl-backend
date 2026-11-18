@@ -1,6 +1,7 @@
 package com.hatocontrol.modelo;
 
 import jakarta.persistence.*;
+import java.time.Period;
 import java.time.LocalDate;
 
 @Entity
@@ -97,5 +98,35 @@ public class Animal {
 
     public void setParto(Parto parto) {
         this.parto = parto;
+    }
+
+    // ---- Comportamiento de la vista lógica ----
+
+    /** Edad en meses cumplidos; null si no hay fecha de nacimiento («sin registros»). */
+    public Integer calcularEdadMeses(LocalDate hoy) {
+        if (fechaNacimiento == null) {
+            return null;
+        }
+        return (int) Period.between(fechaNacimiento, hoy).toTotalMonths();
+    }
+
+    /** Macho: engorde o padrón. Hembra: engorde o leche. */
+    public boolean admiteProposito(Proposito p) {
+        if (p == null || sexo == null) {
+            return false;
+        }
+        return switch (p) {
+            case ENGORDE -> true;
+            case PADRON -> sexo == Sexo.MACHO;
+            case LECHE -> sexo == Sexo.HEMBRA;
+        };
+    }
+
+    public void pasarAEngorde() {
+        this.proposito = Proposito.ENGORDE;
+    }
+
+    public boolean esHembraDeLeche() {
+        return sexo == Sexo.HEMBRA && proposito == Proposito.LECHE;
     }
 }

@@ -77,11 +77,21 @@ public class Usuario {
         this.rol = rol;
     }
 
-    public boolean getActivo() {
+    public boolean isActivo() {
         return activo;
     }
 
     public void setActivo(boolean activo) {
         this.activo = activo;
+    }
+
+    // ---- Comportamiento de la vista lógica ----
+
+    public boolean esGanadero() {
+        return rol == Rol.GANADERO;
+    }
+
+    public void desactivar() {
+        this.activo = false;
     }
 }

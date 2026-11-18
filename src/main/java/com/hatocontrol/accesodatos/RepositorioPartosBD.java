@@ -15,16 +15,24 @@ public class RepositorioPartosBD implements IRepositorioPartos {
 
     @Override
     public void guardar(Parto parto) {
-        throw new UnsupportedOperationException("Se implementa en la Fase 9");
+        if (parto.getId() == null) {
+            em.persist(parto);
+        } else {
+            em.merge(parto);
+        }
     }
 
+    /** Partos de la madre del más antiguo al más reciente. */
     @Override
     public List<Parto> listarPorMadre(Long animalId) {
-        throw new UnsupportedOperationException("Se implementa en la Fase 9");
+        return em.createQuery("select p from Parto p where p.madre.id = :madre order by p.fecha, p.id", Parto.class)
+                .setParameter("madre", animalId)
+                .getResultList();
     }
 
     @Override
     public boolean existenPara(Long animalId) {
-        throw new UnsupportedOperationException("Se implementa en la Fase 9");
+        return !em.createQuery("select p.id from Parto p where p.madre.id = :madre", Long.class)
+                .setParameter("madre", animalId).setMaxResults(1).getResultList().isEmpty();
     }
 }
