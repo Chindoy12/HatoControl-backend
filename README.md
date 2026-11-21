@@ -57,7 +57,7 @@ Las pruebas usan la API como la aplicación web (cookies de sesión y token CSRF
 | Clase | Pruebas | Qué comprueba |
 |---|---|---|
 | `CriteriosAceptacionTest` | 80 | Un método por criterio de aceptación que se puede comprobar en la API: `huNNN_cM` = historia NNN, criterio M. |
-| `SeguridadTest` | 10 | RNF19 (autenticación y longitud de la contraseña), RNF20 (control de acceso y CSRF), RNF22 (hash BCrypt, cookie HttpOnly, nada sensible en respuestas ni registros) y RNF23 (enlace guardado como hash, de un solo uso, vence a los 30 minutos). Usa un correo de prueba que guarda el enlace en lugar de enviarlo. |
+| `SeguridadTest` | 11 | RNF19 (autenticación y longitud de la contraseña), RNF20 (control de acceso, CSRF y cuenta desactivada con la sesión abierta), RNF22 (hash BCrypt, cookie HttpOnly, nada sensible en respuestas ni registros) y RNF23 (enlace guardado como hash, de un solo uso, vence a los 30 minutos). Usa un correo de prueba que guarda el enlace en lugar de enviarlo. |
 | `CapacidadTest` | 1 | RNF24 y RNF10: crea 100 fincas con 40 animales y un año de historial cada una, y comprueba que cada operación responde en menos de 3 segundos. |
 | `HatoControlAplicacionTest` | 1 | La aplicación arranca y el esquema de la base coincide con las entidades. |
 | `HashContrasenasSpringTest` | 1 | El cifrado de contraseñas con BCrypt. |
@@ -81,4 +81,4 @@ Las credenciales se leen de variables de entorno y nunca se guardan en el reposi
 
 - `docs/historias-usuario/`: las 24 historias de usuario.
 - `docs/mockups/`: las 25 pantallas (P01–P25) y su relación con las HU.
-- `docs/vista-desarrollo-v7.png`: vista de desarrollo que coincide con este código.
+- `docs/05-vista-desarrollo-v8.png`: vista de desarrollo que coincide con este código.

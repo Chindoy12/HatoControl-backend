@@ -175,6 +175,21 @@ class SeguridadTest {
         assertEquals(0, bd().queryForObject("select count(*) from animales where codigo_arete = 'CSRF-1'", Integer.class));
     }
 
+    @Test
+    @DisplayName("RNF20 · Si el ganadero desactiva una cuenta, su sesión abierta deja de servir de inmediato (O-01)")
+    void rnf20_cuentaDesactivadaPierdeLaSesionAbierta() {
+        ClientePrueba ganadero = ClientePrueba.conSesion(puerto, CriteriosAceptacionTest.GANADERO);
+        esperar(201, ganadero.post("/api/cuentas/administradores", cuenta(null, "Olga", "olga@laesperanza.example", "Inicial2026")));
+        ClientePrueba olga = new ClientePrueba(puerto);
+        esperar(200, olga.post("/api/sesion/ingreso", ingreso("olga@laesperanza.example", "Inicial2026")));
+        esperar(200, olga.get("/api/animales"));
+        esperar(204, ganadero.post("/api/cuentas/administradores/desactivacion", "{\"correo\":\"olga@laesperanza.example\"}"));
+        esperar(401, olga.get("/api/animales"), "Tu cuenta está desactivada.");
+        esperar(401, olga.post("/api/animales", animal("OLGA-1", "MACHO", null, "ENGORDE")));
+        esperar(401, olga.get("/api/sesion"), "Inicia sesión para continuar.");
+        assertEquals(0, bd().queryForObject("select count(*) from animales where codigo_arete = 'OLGA-1'", Integer.class));
+    }
+
     // ---------- RNF22 Protección de la contraseña ----------
 
     @Test

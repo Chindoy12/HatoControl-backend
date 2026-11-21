@@ -8,6 +8,8 @@ public interface IRepositorioUsuarios {
 
     void guardar(Usuario usuario);
 
+    Optional<Usuario> buscarPorId(Long id);
+
     Optional<Usuario> buscarPorCorreo(String correo);
 
     List<Usuario> listarAdministradores(Long fincaId);

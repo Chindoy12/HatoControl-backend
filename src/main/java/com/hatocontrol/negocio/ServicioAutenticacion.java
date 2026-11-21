@@ -26,6 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class ServicioAutenticacion {
 
     static final String DATOS_INCORRECTOS = "El correo o la contraseña no son correctos.";
+    static final String CUENTA_DESACTIVADA = "Tu cuenta está desactivada. Habla con el ganadero de tu finca.";
     static final int MINUTOS_ENLACE = 30;
 
     private static final Logger LOG = LoggerFactory.getLogger(ServicioAutenticacion.class);
@@ -53,9 +54,21 @@ public class ServicioAutenticacion {
                 .filter(u -> hash.verificar(solicitud.contrasena(), u.getHashContrasena()))
                 .orElseThrow(() -> new AccesoDenegadoException(DATOS_INCORRECTOS));
         if (!usuario.isActivo()) {
-            throw new AccesoDenegadoException("Tu cuenta está desactivada. Habla con el ganadero de tu finca.");
+            throw new AccesoDenegadoException(CUENTA_DESACTIVADA);
         }
         return usuario;
+    }
+
+    /**
+     * Se llama en cada solicitud con sesión: si el ganadero desactivó la cuenta mientras estaba abierta,
+     * la sesión deja de servir de inmediato (observación O-01 de la Fase 11, RNF20).
+     */
+    @Transactional(readOnly = true)
+    public void validarCuentaActiva(Long usuarioId) {
+        boolean activa = usuarioId != null && usuarios.buscarPorId(usuarioId).map(Usuario::isActivo).orElse(false);
+        if (!activa) {
+            throw new AccesoDenegadoException(CUENTA_DESACTIVADA);
+        }
     }
 
     /** La sesión vive en el servidor web: el controlador la invalida. Aquí no queda nada por limpiar. */

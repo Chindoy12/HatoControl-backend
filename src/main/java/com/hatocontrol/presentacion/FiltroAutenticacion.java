@@ -1,6 +1,7 @@
 package com.hatocontrol.presentacion;
 
 import com.hatocontrol.modelo.Rol;
+import com.hatocontrol.negocio.ServicioAutenticacion;
 import com.hatocontrol.negocio.excepciones.AccesoDenegadoException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -16,7 +17,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 /**
  * Comprueba la sesión en cada solicitud a /api y aplica los permisos por rol antes de llegar al
- * controlador (RNF19, RNF20). Una solicitud rechazada no cambia ningún dato.
+ * controlador (RNF19, RNF20). También comprueba que la cuenta siga activa. Una solicitud rechazada no cambia ningún dato.
  */
 @Component
 public class FiltroAutenticacion extends OncePerRequestFilter {
@@ -29,9 +30,11 @@ public class FiltroAutenticacion extends OncePerRequestFilter {
     static final String NOMBRE_FINCA = "nombreFinca";
 
     private final ControlPermisos permisos;
+    private final ServicioAutenticacion servicioAutenticacion;
 
-    public FiltroAutenticacion(ControlPermisos permisos) {
+    public FiltroAutenticacion(ControlPermisos permisos, ServicioAutenticacion servicioAutenticacion) {
         this.permisos = permisos;
+        this.servicioAutenticacion = servicioAutenticacion;
     }
 
     @Override
@@ -50,8 +53,16 @@ public class FiltroAutenticacion extends OncePerRequestFilter {
             rechazar(respuesta, HttpServletResponse.SC_UNAUTHORIZED, "Inicia sesión para continuar.");
             return;
         }
+        HttpSession sesion = solicitud.getSession(false);
         try {
-            permisos.verificar((Rol) solicitud.getSession(false).getAttribute(ROL), funcionDe(ruta));
+            servicioAutenticacion.validarCuentaActiva((Long) sesion.getAttribute(USUARIO));
+        } catch (AccesoDenegadoException e) {
+            sesion.invalidate();
+            rechazar(respuesta, HttpServletResponse.SC_UNAUTHORIZED, e.getMessage());
+            return;
+        }
+        try {
+            permisos.verificar((Rol) sesion.getAttribute(ROL), funcionDe(ruta));
         } catch (AccesoDenegadoException e) {
             rechazar(respuesta, HttpServletResponse.SC_FORBIDDEN, e.getMessage());
             return;
