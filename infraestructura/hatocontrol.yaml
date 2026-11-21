@@ -45,6 +45,12 @@ Parameters:
     Type: String
     Description: Repositorio de GitHub que puede desplegar (dueño/nombre).
     Default: Chindoy12/HatoControl-backend
+  SujetoGithub:
+    Type: String
+    Description: >-
+      Identificador del repositorio del backend en los tokens de GitHub. Los repositorios creados
+      después del 15/07/2026 usan el formato dueño@id/nombre@id. No hace falta cambiarlo.
+    Default: repo:Chindoy12@230640193/HatoControl-backend@1459389066:ref:refs/heads/main
   RepositorioBaseDatos:
     Type: String
     Description: Repositorio público con las migraciones de Flyway (dueño/nombre).
@@ -64,7 +70,7 @@ Metadata:
       - Label: {default: Costo}
         Parameters: [PresupuestoMensual, TipoInstancia]
       - Label: {default: GitHub (no hace falta cambiarlos)}
-        Parameters: [RepositorioBackend, RepositorioBaseDatos, ImagenServidor]
+        Parameters: [RepositorioBackend, SujetoGithub, RepositorioBaseDatos, ImagenServidor]
 
 Conditions:
   RegistrarCorreo: !Equals [!Ref CrearIdentidadCorreo, si]
@@ -456,7 +462,10 @@ Resources:
             Condition:
               StringEquals:
                 token.actions.githubusercontent.com:aud: sts.amazonaws.com
-                token.actions.githubusercontent.com:sub: !Sub 'repo:${RepositorioBackend}:ref:refs/heads/main'
+                # Formato anterior y formato inmutable de GitHub (repositorios creados desde el 15/07/2026)
+                token.actions.githubusercontent.com:sub:
+                  - !Sub 'repo:${RepositorioBackend}:ref:refs/heads/main'
+                  - !Ref SujetoGithub
       Policies:
         - PolicyName: desplegar-hatocontrol
           PolicyDocument:
