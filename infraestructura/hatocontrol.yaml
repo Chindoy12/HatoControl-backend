@@ -1,7 +1,7 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Description: >-
   HatoControl (Fase 12): backend Spring Boot en EC2 con Caddy (HTTPS de Let's Encrypt en un nombre sslip.io),
-  PostgreSQL 17 en RDS privada, correo de recuperación con Amazon SES, alerta de presupuesto y un rol para que
+  PostgreSQL 17 en RDS privada, correo de recuperacion con Amazon SES, alerta de presupuesto y un rol para que
   GitHub Actions despliegue sin claves guardadas (OIDC). El frontend se publica en Vercel.
 
 Parameters:
