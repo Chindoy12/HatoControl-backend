@@ -5,13 +5,14 @@ import java.net.CookieManager;
 import java.net.CookiePolicy;
 import java.net.URI;
 import java.net.http.HttpClient;
+import java.net.http.HttpHeaders;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
 /** Navegador mínimo para las pruebas: guarda las cookies de sesión y envía el token CSRF como la aplicación web. */
 class ClientePrueba {
 
-    record Respuesta(int estado, String cuerpo) {
+    record Respuesta(int estado, String cuerpo, HttpHeaders encabezados) {
     }
 
     private final String base;
@@ -66,7 +67,7 @@ class ClientePrueba {
         }
         try {
             HttpResponse<String> r = http.send(peticion.build(), HttpResponse.BodyHandlers.ofString());
-            return new Respuesta(r.statusCode(), r.body());
+            return new Respuesta(r.statusCode(), r.body(), r.headers());
         } catch (IOException | InterruptedException e) {
             throw new IllegalStateException(e);
         }
