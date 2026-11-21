@@ -5,15 +5,7 @@ import java.time.LocalDate;
 
 @Entity
 @Table(name = "registros_sanitarios")
-public class RegistroSanitario {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "animal_id")
-    private Animal animal;
+public class RegistroSanitario extends RegistroDeAnimal {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "tipo", nullable = false)
@@ -36,18 +28,6 @@ public class RegistroSanitario {
     private String observaciones;
 
     public RegistroSanitario() {
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public Animal getAnimal() {
-        return animal;
-    }
-
-    public void setAnimal(Animal animal) {
-        this.animal = animal;
     }
 
     public TipoEventoSanitario getTipo() {
@@ -116,5 +96,11 @@ public class RegistroSanitario {
         return estado == EstadoActividad.PROGRAMADA
                 && !fechaProgramada.isBefore(hoy)
                 && !fechaProgramada.isAfter(hoy.plusDays(dias));
+    }
+
+    /** Realizada: la fecha en que se hizo; programada: la fecha prevista. */
+    @Override
+    public LocalDate fechaDelRegistro() {
+        return fechaRealizacion != null ? fechaRealizacion : fechaProgramada;
     }
 }

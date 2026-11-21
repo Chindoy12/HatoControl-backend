@@ -36,13 +36,13 @@ public class ServicioPesos {
         }
         Animal animal = animales.buscarPorArete(fincaId, ServicioAnimales.normalizarArete(codigoArete))
                 .orElseThrow(() -> new ReglaNegocioException("Debes seleccionar un animal registrado."));
-        if (solicitud.fechaMedicion().isAfter(LocalDate.now(reloj))) {
-            throw new ReglaNegocioException("La fecha de medición no puede ser posterior a hoy.");
-        }
         RegistroPeso registro = new RegistroPeso();
         registro.setAnimal(animal);
         registro.setPesoKg(solicitud.pesoKg());
         registro.setFechaMedicion(solicitud.fechaMedicion());
+        if (registro.esPosteriorA(LocalDate.now(reloj))) {
+            throw new ReglaNegocioException("La fecha de medición no puede ser posterior a hoy.");
+        }
         pesos.guardar(registro);
         return historialConDiferencias(fincaId, animal.getCodigoArete()).stream()
                 .filter(p -> p.fechaMedicion().equals(registro.getFechaMedicion()) && p.pesoKg() == registro.getPesoKg())

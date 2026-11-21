@@ -20,12 +20,12 @@ src/main/java/com/hatocontrol/
 │   ├── Servicio*.java                8 servicios
 │   ├── IServicioCorreo, AdaptadorCorreo
 │   ├── IHashContrasenas, HashContrasenasSpring
-│   ├── IPeriodoPromedio, PromedioSemanal, PromedioMensual, PromedioPorParto
-│   └── excepciones/                  3 excepciones del negocio
+│   ├── PeriodoPromedio (abstracta) y sus subclases PromedioSemanal, PromedioMensual, PromedioPorParto
+│   └── excepciones/                  HatoControlException (sellada) y sus 3 subclases
 ├── accesodatos/                      Capa de Acceso a Datos
 │   ├── IRepositorio*.java            8 interfaces
 │   └── Repositorio*BD.java           8 implementaciones con JPA
-└── modelo/                           Modelo: 8 entidades y 5 enumerados
+└── modelo/                           Modelo: 8 entidades (3 heredan de RegistroDeAnimal) y 5 enumerados
 ```
 
 Las tablas las crea el repositorio [HatoControl-db](https://github.com/Chindoy12/HatoControl-db) con Flyway; aquí Hibernate solo valida que coincidan (`ddl-auto: validate`).

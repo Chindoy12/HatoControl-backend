@@ -39,39 +39,53 @@ public class ServicioReproduccion {
 
     /** Guarda el parto y sus crías juntos: si algo falla, no se guarda nada. */
     public PartoResponse registrarParto(Long fincaId, PartoRequest solicitud) {
+        Animal madre = buscarMadre(fincaId, solicitud);
+        List<AnimalRequest> crias = solicitud.crias() == null ? List.of() : solicitud.crias();
+        validarCrias(fincaId, crias, solicitud.fecha());
+        Parto parto = new Parto();
+        parto.setMadre(madre);
+        parto.setFecha(solicitud.fecha());
+        partos.guardar(parto);
+        for (AnimalRequest cria : crias) {
+            parto.getCrias().add(guardarCria(cria, parto));
+        }
+        return aRespuesta(parto);
+    }
+
+    private Animal buscarMadre(Long fincaId, PartoRequest solicitud) {
         Animal madre = animales.buscarPorArete(fincaId, ServicioAnimales.normalizarArete(solicitud.codigoAreteMadre()))
                 .filter(a -> a.getSexo() == Sexo.HEMBRA)
                 .orElseThrow(() -> new ReglaNegocioException("Selecciona una hembra registrada."));
         if (solicitud.fecha().isAfter(LocalDate.now(reloj))) {
             throw new ReglaNegocioException("La fecha del parto no puede ser posterior a hoy.");
         }
-        List<AnimalRequest> crias = solicitud.crias() == null ? List.of() : solicitud.crias();
+        return madre;
+    }
+
+    /** Arete único (también entre las crías del mismo parto) y propósito según el sexo (RN09). */
+    private void validarCrias(Long fincaId, List<AnimalRequest> crias, LocalDate fechaParto) {
         Set<String> aretes = new HashSet<>();
         for (AnimalRequest cria : crias) {
             String arete = ServicioAnimales.normalizarArete(cria.codigoArete());
             if (!aretes.add(arete) || animales.buscarPorArete(fincaId, arete).isPresent()) {
                 throw new ReglaNegocioException("El código de arete " + arete + " ya está registrado en la finca.");
             }
-            servicioAnimales.validarDatos(new AnimalRequest(arete, cria.nombre(), cria.sexo(), solicitud.fecha(), cria.proposito()));
+            servicioAnimales.validarDatos(new AnimalRequest(arete, cria.nombre(), cria.sexo(), fechaParto, cria.proposito()));
         }
+    }
 
-        Parto parto = new Parto();
-        parto.setMadre(madre);
-        parto.setFecha(solicitud.fecha());
-        partos.guardar(parto);
-        for (AnimalRequest cria : crias) {
-            Animal nueva = new Animal();
-            nueva.setFinca(madre.getFinca());
-            nueva.setCodigoArete(ServicioAnimales.normalizarArete(cria.codigoArete()));
-            nueva.setNombre(cria.nombre() == null || cria.nombre().isBlank() ? null : cria.nombre().trim());
-            nueva.setSexo(cria.sexo());
-            nueva.setProposito(cria.proposito());
-            nueva.setFechaNacimiento(solicitud.fecha());
-            nueva.setParto(parto);
-            animales.guardar(nueva);
-            parto.getCrias().add(nueva);
-        }
-        return aRespuesta(parto);
+    /** La cría nace en la fecha del parto y queda asociada a su madre. */
+    private Animal guardarCria(AnimalRequest cria, Parto parto) {
+        Animal nueva = new Animal();
+        nueva.setFinca(parto.getMadre().getFinca());
+        nueva.setCodigoArete(ServicioAnimales.normalizarArete(cria.codigoArete()));
+        nueva.setNombre(cria.nombre() == null || cria.nombre().isBlank() ? null : cria.nombre().trim());
+        nueva.setSexo(cria.sexo());
+        nueva.setProposito(cria.proposito());
+        nueva.setFechaNacimiento(parto.getFecha());
+        nueva.setParto(parto);
+        animales.guardar(nueva);
+        return nueva;
     }
 
     /** Partos de la hembra del más antiguo al más reciente, con sus crías; lista vacía = «sin registros». */

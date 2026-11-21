@@ -1,6 +1,7 @@
 package com.hatocontrol.negocio.excepciones;
 
-public class AccesoDenegadoException extends RuntimeException {
+/** El usuario no tiene permiso, la sesión no existe o la cuenta está desactivada. */
+public final class AccesoDenegadoException extends HatoControlException {
 
     public AccesoDenegadoException(String mensaje) {
         super(mensaje);

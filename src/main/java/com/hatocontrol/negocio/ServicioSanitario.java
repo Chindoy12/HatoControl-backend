@@ -38,12 +38,12 @@ public class ServicioSanitario {
         if (fecha == null) {
             throw new ReglaNegocioException("Escribe la fecha del evento.");
         }
-        if (fecha.isAfter(hoy())) {
-            throw new ReglaNegocioException("La fecha del evento no puede ser posterior a hoy.");
-        }
         RegistroSanitario registro = nuevo(animal, solicitud);
         registro.setFechaRealizacion(fecha);
         registro.setEstado(EstadoActividad.REALIZADA);
+        if (registro.esPosteriorA(hoy())) {
+            throw new ReglaNegocioException("La fecha del evento no puede ser posterior a hoy.");
+        }
         sanitario.guardar(registro);
         return aRespuesta(registro);
     }

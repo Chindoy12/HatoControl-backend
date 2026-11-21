@@ -59,38 +59,53 @@ public class ServicioReportes {
      * peso·arete·nombre·kg·fecha.
      */
     public ReporteResponse dashboard(Long fincaId) {
-        LocalDate hoy = LocalDate.now(reloj);
         List<Animal> lista = animales.listar(fincaId, null);
+        List<String> filas = new ArrayList<>(filasResumen(lista));
+        for (EventoSanitarioResponse e : servicioSanitario.pendientes(fincaId)) {
+            filas.add(filaActividad("VENCIDA", e));
+        }
+        for (EventoSanitarioResponse e : servicioSanitario.proximas(fincaId, 15)) {
+            filas.add(filaActividad("PROXIMA", e));
+        }
+        filas.addAll(filasUltimoPeso(lista));
+        return new ReporteResponse("DASHBOARD", LocalDate.now(reloj), filas);
+    }
+
+    /** Animales registrados y eventos realizados por tipo; las actividades programadas no cuentan (HU_012 C2). */
+    private List<String> filasResumen(List<Animal> lista) {
         Map<TipoEventoSanitario, Integer> realizados = new EnumMap<>(TipoEventoSanitario.class);
         for (TipoEventoSanitario t : TipoEventoSanitario.values()) {
             realizados.put(t, 0);
         }
-        List<String> pesosFilas = new ArrayList<>();
         for (Animal a : lista) {
             for (RegistroSanitario r : sanitario.historial(a.getId())) {
                 if (r.getEstado() == EstadoActividad.REALIZADA) {
                     realizados.merge(r.getTipo(), 1, Integer::sum);
                 }
             }
+        }
+        return List.of(
+                fila("resumen", "animales", String.valueOf(lista.size())),
+                fila("resumen", "vacunas", String.valueOf(realizados.get(TipoEventoSanitario.VACUNA))),
+                fila("resumen", "enfermedades", String.valueOf(realizados.get(TipoEventoSanitario.ENFERMEDAD))),
+                fila("resumen", "tratamientos", String.valueOf(realizados.get(TipoEventoSanitario.TRATAMIENTO))));
+    }
+
+    private String filaActividad(String estado, EventoSanitarioResponse e) {
+        return fila("actividad", estado, e.fechaProgramada().toString(), e.codigoArete(), texto(e.nombreAnimal()), e.tipo().name(), e.descripcion());
+    }
+
+    /** El último peso de cada animal que tiene mediciones. */
+    private List<String> filasUltimoPeso(List<Animal> lista) {
+        List<String> filas = new ArrayList<>();
+        for (Animal a : lista) {
             List<RegistroPeso> historial = pesos.historial(a.getId());
             if (!historial.isEmpty()) {
                 RegistroPeso ultimo = historial.getLast();
-                pesosFilas.add(fila("peso", a.getCodigoArete(), texto(a.getNombre()), numero(ultimo.getPesoKg()), ultimo.getFechaMedicion().toString()));
+                filas.add(fila("peso", a.getCodigoArete(), texto(a.getNombre()), numero(ultimo.getPesoKg()), ultimo.getFechaMedicion().toString()));
             }
         }
-        List<String> filas = new ArrayList<>();
-        filas.add(fila("resumen", "animales", String.valueOf(lista.size())));
-        filas.add(fila("resumen", "vacunas", String.valueOf(realizados.get(TipoEventoSanitario.VACUNA))));
-        filas.add(fila("resumen", "enfermedades", String.valueOf(realizados.get(TipoEventoSanitario.ENFERMEDAD))));
-        filas.add(fila("resumen", "tratamientos", String.valueOf(realizados.get(TipoEventoSanitario.TRATAMIENTO))));
-        for (EventoSanitarioResponse e : servicioSanitario.pendientes(fincaId)) {
-            filas.add(fila("actividad", "VENCIDA", e.fechaProgramada().toString(), e.codigoArete(), texto(e.nombreAnimal()), e.tipo().name(), e.descripcion()));
-        }
-        for (EventoSanitarioResponse e : servicioSanitario.proximas(fincaId, 15)) {
-            filas.add(fila("actividad", "PROXIMA", e.fechaProgramada().toString(), e.codigoArete(), texto(e.nombreAnimal()), e.tipo().name(), e.descripcion()));
-        }
-        filas.addAll(pesosFilas);
-        return new ReporteResponse("DASHBOARD", hoy, filas);
+        return filas;
     }
 
     /** ANIMALES: arete·nombre·sexo·propósito·edad. SANITARIO: fecha·tipo·descripción·observaciones. PESO: fecha·kg·variación. */

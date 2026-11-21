@@ -5,15 +5,7 @@ import java.time.LocalDate;
 
 @Entity
 @Table(name = "registros_leche")
-public class RegistroLeche {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "animal_id")
-    private Animal animal;
+public class RegistroLeche extends RegistroDeAnimal {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "parto_id")
@@ -26,18 +18,6 @@ public class RegistroLeche {
     private double litros;
 
     public RegistroLeche() {
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public Animal getAnimal() {
-        return animal;
-    }
-
-    public void setAnimal(Animal animal) {
-        this.animal = animal;
     }
 
     public Parto getParto() {
@@ -62,5 +42,10 @@ public class RegistroLeche {
 
     public void setLitros(double litros) {
         this.litros = litros;
+    }
+
+    @Override
+    public LocalDate fechaDelRegistro() {
+        return fecha;
     }
 }

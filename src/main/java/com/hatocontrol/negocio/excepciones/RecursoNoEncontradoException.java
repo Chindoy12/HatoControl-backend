@@ -1,6 +1,7 @@
 package com.hatocontrol.negocio.excepciones;
 
-public class RecursoNoEncontradoException extends RuntimeException {
+/** Lo que se busca no existe en la finca del usuario. */
+public final class RecursoNoEncontradoException extends HatoControlException {
 
     public RecursoNoEncontradoException(String mensaje) {
         super(mensaje);

@@ -1,6 +1,7 @@
 package com.hatocontrol.presentacion;
 
 import com.hatocontrol.negocio.excepciones.AccesoDenegadoException;
+import com.hatocontrol.negocio.excepciones.HatoControlException;
 import com.hatocontrol.negocio.excepciones.RecursoNoEncontradoException;
 import com.hatocontrol.negocio.excepciones.ReglaNegocioException;
 import java.util.LinkedHashMap;
@@ -21,19 +22,15 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 @RestControllerAdvice
 public class ManejadorExcepciones {
 
-    @ExceptionHandler(RecursoNoEncontradoException.class)
-    public ResponseEntity<Map<String, Object>> manejarNoEncontrado(RecursoNoEncontradoException e) {
-        return respuesta(HttpStatus.NOT_FOUND.value(), e.getMessage(), Map.of());
-    }
-
-    @ExceptionHandler(ReglaNegocioException.class)
-    public ResponseEntity<Map<String, Object>> manejarReglaNegocio(ReglaNegocioException e) {
-        return respuesta(422, e.getMessage(), Map.of());
-    }
-
-    @ExceptionHandler(AccesoDenegadoException.class)
-    public ResponseEntity<Map<String, Object>> manejarAccesoDenegado(AccesoDenegadoException e) {
-        return respuesta(HttpStatus.FORBIDDEN.value(), e.getMessage(), Map.of());
+    /** Cualquier error del sistema llega como HatoControlException; según su subclase cambia el código HTTP. */
+    @ExceptionHandler(HatoControlException.class)
+    public ResponseEntity<Map<String, Object>> manejarError(HatoControlException e) {
+        int estado = switch (e) {
+            case RecursoNoEncontradoException noExiste -> HttpStatus.NOT_FOUND.value();
+            case AccesoDenegadoException sinPermiso -> HttpStatus.FORBIDDEN.value();
+            case ReglaNegocioException regla -> HttpStatus.UNPROCESSABLE_CONTENT.value();
+        };
+        return respuesta(estado, e.getMessage(), Map.of());
     }
 
     /** Campos que faltan o vienen con un formato que no se puede leer. */
