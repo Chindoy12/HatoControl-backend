@@ -15,6 +15,13 @@ Parameters:
       Correo desde el que se envía la recuperación de contraseña. AWS le enviará un mensaje para verificarlo.
       Mientras SES esté en modo de prueba, solo se puede enviar a correos verificados.
     AllowedPattern: '^[^@\s]+@[^@\s]+\.[^@\s]+$'
+  CrearIdentidadCorreo:
+    Type: String
+    Description: >-
+      si = registra CorreoRemitente en Amazon SES y le envía el correo de verificación.
+      no = ese correo ya está registrado en SES (por ejemplo, de un intento anterior) y se reutiliza.
+    AllowedValues: [si, 'no']
+    Default: si
   UrlFrontend:
     Type: String
     Description: Dirección de la aplicación en Vercel (sin / al final). Se usa en el enlace de recuperación.
@@ -51,13 +58,16 @@ Metadata:
   AWS::CloudFormation::Interface:
     ParameterGroups:
       - Label: {default: Correos}
-        Parameters: [CorreoAlertas, CorreoRemitente]
+        Parameters: [CorreoAlertas, CorreoRemitente, CrearIdentidadCorreo]
       - Label: {default: Aplicación}
         Parameters: [UrlFrontend, CargarDatosDePrueba]
       - Label: {default: Costo}
         Parameters: [PresupuestoMensual, TipoInstancia]
       - Label: {default: GitHub (no hace falta cambiarlos)}
         Parameters: [RepositorioBackend, RepositorioBaseDatos, ImagenServidor]
+
+Conditions:
+  RegistrarCorreo: !Equals [!Ref CrearIdentidadCorreo, si]
 
 Resources:
   # ---------- Red: una subred pública para el backend y dos privadas para la base (RNF21) ----------
@@ -179,6 +189,7 @@ Resources:
   # ---------- Correo de recuperación: Amazon SES por SMTP (AdaptadorCorreo) ----------
   IdentidadCorreo:
     Type: AWS::SES::EmailIdentity
+    Condition: RegistrarCorreo
     Properties:
       EmailIdentity: !Ref CorreoRemitente
 

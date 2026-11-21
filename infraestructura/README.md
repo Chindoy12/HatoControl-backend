@@ -24,6 +24,7 @@ En total son unos 32 USD al mes con `t4g.small` y unos 26 USD con `t4g.micro`. E
 3. **Crear la pila.** En la consola de AWS, entra a *CloudFormation → Create stack → With new resources*.
    - Elige *Upload a template file* y sube `hatocontrol.yaml`.
    - El nombre de la pila debe ser exactamente **`hatocontrol`**.
+   - `CrearIdentidadCorreo`: deja `si` la primera vez. Si la pila falla porque el correo remitente «already exists» en SES (queda de un intento anterior), vuelve a crearla con `no`.
    - Llena los parámetros:
      - `CorreoAlertas`: tu correo.
      - `CorreoRemitente`: tu correo o el del proyecto.
