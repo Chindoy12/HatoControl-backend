@@ -133,7 +133,7 @@ Resources:
       GroupDescription: Backend de HatoControl. Solo HTTP (certificado) y HTTPS. Sin SSH; se administra con Session Manager.
       VpcId: !Ref Red
       SecurityGroupIngress:
-        - {IpProtocol: tcp, FromPort: 80, ToPort: 80, CidrIp: 0.0.0.0/0, Description: Let's Encrypt y redireccion a HTTPS}
+        - {IpProtocol: tcp, FromPort: 80, ToPort: 80, CidrIp: 0.0.0.0/0, Description: Lets Encrypt y redireccion a HTTPS}
         - {IpProtocol: tcp, FromPort: 443, ToPort: 443, CidrIp: 0.0.0.0/0, Description: API por HTTPS}
       Tags: [{Key: Name, Value: hatocontrol-backend}]
 
@@ -206,7 +206,7 @@ Resources:
     Type: AWS::SecretsManager::Secret
     Properties:
       Name: hatocontrol/correo
-      Description: Clave del usuario que solo envía el correo de recuperación por SES.
+      Description: Clave del usuario que solo envia el correo de recuperacion por SES.
       SecretString: !Sub '{"id":"${ClaveCorreo}","clave":"${ClaveCorreo.SecretAccessKey}"}'
 
   # ---------- Servidor del backend ----------
