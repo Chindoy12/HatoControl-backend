@@ -14,7 +14,7 @@
 | Dependencias | HU-20 |
 | Repositorios | HatoControl-frontend, HatoControl-backend, HatoControl-db |
 
-**Trazabilidad con el diseño (Fases 3 y 5; vista de desarrollo v8)**
+**Trazabilidad con el diseño (Fases 3 y 5; vista de desarrollo v9 y vista lógica v3)**
 
 | Vista | Elementos |
 |---|---|
@@ -22,7 +22,7 @@
 | Contexto (flujo) | Cuentas de administradores |
 | Funcional | Fincas, cuentas y acceso |
 | Lógica | Usuario.desactivar(), activo · enum Rol |
-| Desarrollo | PaginaAdministradores.crear(), listar(), desactivar(), restablecer() + Formulario (tipo administrador o contraseña) → ControladorCuentas → ServicioCuentas.crearAdministrador(), listarAdministradores(), desactivar(), restablecerContrasena() → IRepositorioUsuarios.guardar(), listarAdministradores(fincaId) · IHashContrasenas.cifrar() |
+| Desarrollo | PaginaAdministradores.crear(), listar(), desactivar(), restablecer() + Formulario (tipo administrador o contraseña → FormularioAdministrador, FormularioContrasena) → ControladorCuentas → ServicioCuentas.crearAdministrador(), listarAdministradores(), desactivar(), restablecerContrasena() → IRepositorioUsuarios.guardar(), listarAdministradores(fincaId) · IHashContrasenas.cifrar() |
 | DTO | CuentaRequest / UsuarioResponse |
 | Excepciones | ReglaNegocioException (correo registrado) · AccesoDenegadoException (administrador) |
 | Entidad-relación | usuarios (activo) |

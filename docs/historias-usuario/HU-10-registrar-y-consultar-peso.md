@@ -14,15 +14,15 @@
 | Dependencias | HU-01 |
 | Repositorios | HatoControl-frontend, HatoControl-backend, HatoControl-db |
 
-**Trazabilidad con el diseño (Fases 3 y 5; vista de desarrollo v8)**
+**Trazabilidad con el diseño (Fases 3 y 5; vista de desarrollo v9 y vista lógica v3)**
 
 | Vista | Elementos |
 |---|---|
 | Casos de uso | CU-10 |
 | Contexto (flujo) | Pesos, partos, crías y leche diaria |
 | Funcional | Control de peso (ofrece IConsultaPesos e IRegistroPeso) |
-| Lógica | RegistroPeso.diferenciaCon(anterior) |
-| Desarrollo | Formulario (tipo peso) → ControladorPesos.registrar(), historial() → ServicioPesos.registrar(), historialConDiferencias() → IRepositorioPesos.guardar(registro), historial(animalId) |
+| Lógica | RegistroPeso.diferenciaCon(anterior); hereda de RegistroDeAnimal (esPosteriorA) |
+| Desarrollo | Formulario (tipo peso → FormularioPeso) → ControladorPesos.registrar(), historial() → ServicioPesos.registrar(), historialConDiferencias() → IRepositorioPesos.guardar(registro), historial(animalId) |
 | DTO | PesoRequest / PesoResponse (diferenciaKg) |
 | Excepciones | ReglaNegocioException (peso ≤ 0, fecha futura) · RecursoNoEncontradoException |
 | Entidad-relación | registros_peso |

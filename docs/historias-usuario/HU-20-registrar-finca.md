@@ -14,7 +14,7 @@
 | Dependencias | Ninguna |
 | Repositorios | HatoControl-frontend, HatoControl-backend, HatoControl-db |
 
-**Trazabilidad con el diseño (Fases 3 y 5; vista de desarrollo v8)**
+**Trazabilidad con el diseño (Fases 3 y 5; vista de desarrollo v9 y vista lógica v3)**
 
 | Vista | Elementos |
 |---|---|
@@ -22,7 +22,7 @@
 | Contexto (flujo) | Registro de finca y credenciales |
 | Funcional | Fincas, cuentas y acceso |
 | Lógica | Finca 1 — 1..* Usuario · enum Rol |
-| Desarrollo | Formulario (tipo finca) con mostrarContador() → ControladorCuentas.registrarFinca() → ServicioCuentas.registrarFinca() → IHashContrasenas.cifrar() · IRepositorioUsuarios.buscarPorCorreo(), guardar() · IRepositorioFincas.guardar() |
+| Desarrollo | Formulario (tipo finca → FormularioFinca) con Contador (mostrarContador()) → ControladorCuentas.registrarFinca() → ServicioCuentas.registrarFinca() → IHashContrasenas.cifrar() · IRepositorioUsuarios.buscarPorCorreo(), guardar() · IRepositorioFincas.guardar() |
 | DTO | CuentaRequest / SesionResponse (la cuenta queda con la sesión abierta) |
 | Excepciones | ReglaNegocioException (correo registrado, contraseña de 10 a 12) |
 | Entidad-relación | fincas, usuarios (correo único) |

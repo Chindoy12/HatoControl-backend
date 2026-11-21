@@ -14,7 +14,7 @@
 | Dependencias | HU-01 |
 | Repositorios | HatoControl-frontend, HatoControl-backend, HatoControl-db |
 
-**Trazabilidad con el diseño (Fases 3 y 5; vista de desarrollo v8)**
+**Trazabilidad con el diseño (Fases 3 y 5; vista de desarrollo v9 y vista lógica v3)**
 
 | Vista | Elementos |
 |---|---|
@@ -22,7 +22,7 @@
 | Contexto (flujo) | Vacunas, enfermedades, tratamientos y actividades |
 | Funcional | Control sanitario |
 | Lógica | RegistroSanitario.marcarRealizada(fecha) · fechaProgramada y fechaRealizacion [0..1] |
-| Desarrollo | PaginaSanidad + Formulario (tipo sanitario) → ControladorSanitario.programar() · PaginaSanidad.marcarRealizada() → ControladorSanitario.marcarRealizada() → ServicioSanitario.programar(), marcarRealizada() → IRepositorioSanitario.buscarPorId(id), guardar(registro) |
+| Desarrollo | PaginaSanidad + Formulario (tipo sanitario → FormularioSanitario) → ControladorSanitario.programar() · PaginaSanidad.marcarRealizada() → ControladorSanitario.marcarRealizada() → ServicioSanitario.programar(), marcarRealizada() → IRepositorioSanitario.buscarPorId(id), guardar(registro) |
 | DTO | EventoSanitarioRequest / EventoSanitarioResponse |
 | Excepciones | ReglaNegocioException (fecha anterior a hoy) |
 | Entidad-relación | registros_sanitarios (dos fechas y estado) |

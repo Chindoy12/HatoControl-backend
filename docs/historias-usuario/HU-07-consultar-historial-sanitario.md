@@ -14,7 +14,7 @@
 | Dependencias | HU-06 |
 | Repositorios | HatoControl-frontend, HatoControl-backend, HatoControl-db |
 
-**Trazabilidad con el diseño (Fases 3 y 5; vista de desarrollo v8)**
+**Trazabilidad con el diseño (Fases 3 y 5; vista de desarrollo v9 y vista lógica v3)**
 
 | Vista | Elementos |
 |---|---|

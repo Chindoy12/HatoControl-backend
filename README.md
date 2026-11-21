@@ -81,8 +81,8 @@ Las credenciales se leen de variables de entorno y nunca se guardan en el reposi
 
 - `docs/historias-usuario/`: las 24 historias de usuario.
 - `docs/mockups/`: las 25 pantallas (P01–P25) y su relación con las HU.
-- `docs/05-vista-desarrollo-v8.png`: vista de desarrollo que coincide con este código.
-- `docs/04-vista-logica-v2.png`: vista lógica con `TokenRecuperacion` y la asociación vaca → leche.
+- `docs/05-vista-desarrollo-v9.png`: vista de desarrollo que coincide con este código (herencia de excepciones y de periodos de promedio; formularios por tipo).
+- `docs/04-vista-logica-v3.png`: vista lógica con `TokenRecuperacion`, la asociación vaca → leche y la clase abstracta `RegistroDeAnimal`.
 - `docs/06-vista-despliegue-v2.png`: vista de despliegue en Vercel y AWS (Fase 12).
 - `docs/diagramas-visual-paradigm.md`: qué cambiar en cada diagrama de Visual Paradigm para que coincida con el código.
 - `infraestructura/`: plantilla de CloudFormation y guía de despliegue.

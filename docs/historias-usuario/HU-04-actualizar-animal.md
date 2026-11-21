@@ -14,7 +14,7 @@
 | Dependencias | HU-01 |
 | Repositorios | HatoControl-frontend, HatoControl-backend, HatoControl-db |
 
-**Trazabilidad con el diseño (Fases 3 y 5; vista de desarrollo v8)**
+**Trazabilidad con el diseño (Fases 3 y 5; vista de desarrollo v9 y vista lógica v3)**
 
 | Vista | Elementos |
 |---|---|
@@ -22,7 +22,7 @@
 | Contexto (flujo) | Datos de animales |
 | Funcional | Gestión de animales |
 | Lógica | Animal.admiteProposito(p) |
-| Desarrollo | Formulario (tipo animal) → ControladorAnimales.actualizar() → ServicioAnimales.actualizar() → IRepositorioAnimales.buscarPorArete(fincaId, codigo), guardar(animal) |
+| Desarrollo | Formulario (tipo animal → FormularioAnimal) → ControladorAnimales.actualizar() → ServicioAnimales.actualizar() → IRepositorioAnimales.buscarPorArete(fincaId, codigo), guardar(animal) |
 | DTO | AnimalRequest / AnimalResponse |
 | Excepciones | ReglaNegocioException (arete duplicado, fecha futura) · RecursoNoEncontradoException |
 | Entidad-relación | animales |

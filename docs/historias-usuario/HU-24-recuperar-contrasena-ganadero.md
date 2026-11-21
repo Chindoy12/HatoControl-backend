@@ -14,7 +14,7 @@
 | Dependencias | HU-20 |
 | Repositorios | HatoControl-frontend, HatoControl-backend, HatoControl-db |
 
-**Trazabilidad con el diseño (Fases 3 y 5; vista de desarrollo v8)**
+**Trazabilidad con el diseño (Fases 3 y 5; vista de desarrollo v9 y vista lógica v3)**
 
 | Vista | Elementos |
 |---|---|
@@ -22,7 +22,7 @@
 | Contexto (flujo) | Enlace de recuperación de contraseña (Servicio de correo) |
 | Funcional | Fincas, cuentas y acceso → Servicio de correo |
 | Lógica | Usuario |
-| Desarrollo | PaginaIngreso.recuperarContrasena() + Formulario (tipo contraseña) → ControladorAutenticacion.solicitarRecuperacion(), restablecerConEnlace() → ServicioAutenticacion.recuperarContrasena(), restablecerConEnlace(token, contrasena) → IRepositorioTokens.guardar(), buscarVigente(), marcarUsado() · IServicioCorreo.enviarEnlace() (AdaptadorCorreo) · IHashContrasenas.cifrar() |
+| Desarrollo | PaginaIngreso.recuperarContrasena() + Formulario (tipo contraseña → FormularioContrasena) → ControladorAutenticacion.solicitarRecuperacion(), restablecerConEnlace() → ServicioAutenticacion.recuperarContrasena(), restablecerConEnlace(token, contrasena) → IRepositorioTokens.guardar(), buscarVigente(), marcarUsado() · IServicioCorreo.enviarEnlace() (AdaptadorCorreo) · IHashContrasenas.cifrar() |
 | DTO | IngresoRequest (correo, contrasena nueva) |
 | Excepciones | ReglaNegocioException (enlace vencido o usado) |
 | Entidad-relación | tokens_recuperacion, usuarios |

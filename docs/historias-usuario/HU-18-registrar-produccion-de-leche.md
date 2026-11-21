@@ -14,15 +14,15 @@
 | Dependencias | HU-01, HU-16 |
 | Repositorios | HatoControl-frontend, HatoControl-backend, HatoControl-db |
 
-**Trazabilidad con el diseño (Fases 3 y 5; vista de desarrollo v8)**
+**Trazabilidad con el diseño (Fases 3 y 5; vista de desarrollo v9 y vista lógica v3)**
 
 | Vista | Elementos |
 |---|---|
 | Casos de uso | CU-18 |
 | Contexto (flujo) | Pesos, partos, crías y leche diaria |
 | Funcional | Reproducción y leche |
-| Lógica | RegistroLeche, Animal.esHembraDeLeche() |
-| Desarrollo | Formulario (tipo leche) → ControladorLeche.registrar() → ServicioLeche.registrar() → IRepositorioPartos.listarPorMadre(animalId) · IRepositorioLeche.existeEnFecha(animalId, fecha), guardar(registro) |
+| Lógica | RegistroLeche (hereda de RegistroDeAnimal: esPosteriorA), Animal.esHembraDeLeche() |
+| Desarrollo | Formulario (tipo leche → FormularioLeche) → ControladorLeche.registrar() → ServicioLeche.registrar() → IRepositorioPartos.listarPorMadre(animalId) · IRepositorioLeche.existeEnFecha(animalId, fecha), guardar(registro) |
 | DTO | LecheRequest (fechaParto opcional) / LecheResponse |
 | Excepciones | ReglaNegocioException (RF47) |
 | Entidad-relación | registros_leche (UK animal_id + fecha, parto_id) |

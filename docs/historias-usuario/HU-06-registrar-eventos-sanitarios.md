@@ -14,15 +14,15 @@
 | Dependencias | HU-01 |
 | Repositorios | HatoControl-frontend, HatoControl-backend, HatoControl-db |
 
-**Trazabilidad con el diseño (Fases 3 y 5; vista de desarrollo v8)**
+**Trazabilidad con el diseño (Fases 3 y 5; vista de desarrollo v9 y vista lógica v3)**
 
 | Vista | Elementos |
 |---|---|
 | Casos de uso | CU-06 |
 | Contexto (flujo) | Vacunas, enfermedades, tratamientos y actividades |
 | Funcional | Control sanitario (usa IConsultaAnimales) |
-| Lógica | RegistroSanitario · enum TipoEventoSanitario, EstadoActividad |
-| Desarrollo | PaginaSanidad + Formulario (tipo sanitario) → ControladorSanitario.registrarEvento() → ServicioSanitario.registrarEvento() → IRepositorioSanitario.guardar(registro) |
+| Lógica | RegistroSanitario (hereda de RegistroDeAnimal: esPosteriorA) · enum TipoEventoSanitario, EstadoActividad |
+| Desarrollo | PaginaSanidad + Formulario (tipo sanitario → FormularioSanitario) → ControladorSanitario.registrarEvento() → ServicioSanitario.registrarEvento() → IRepositorioSanitario.guardar(registro) |
 | DTO | EventoSanitarioRequest / EventoSanitarioResponse |
 | Excepciones | RecursoNoEncontradoException (animal no seleccionado o inexistente) |
 | Entidad-relación | registros_sanitarios |

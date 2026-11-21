@@ -14,7 +14,7 @@
 | Dependencias | HU-21 |
 | Repositorios | HatoControl-frontend, HatoControl-backend |
 
-**Trazabilidad con el diseño (Fases 3 y 5; vista de desarrollo v8)**
+**Trazabilidad con el diseño (Fases 3 y 5; vista de desarrollo v9 y vista lógica v3)**
 
 | Vista | Elementos |
 |---|---|
@@ -24,7 +24,7 @@
 | Lógica | Finca (cada registro pertenece a una finca) · enum Rol |
 | Desarrollo | Encabezado.mostrarMenu(rol) · FiltroAutenticacion.validarSesion(), obtenerFinca() → ServicioAutenticacion.validarCuentaActiva(usuarioId) → IRepositorioUsuarios.buscarPorId(id) · ControlPermisos.verificar(rol, funcion) · todos los IRepositorio… reciben fincaId |
 | DTO | SesionResponse (rol) |
-| Excepciones | AccesoDenegadoException → ManejadorExcepciones.manejarAccesoDenegado() |
+| Excepciones | AccesoDenegadoException → ManejadorExcepciones.manejarError(e) (403, AccesoDenegadoException hereda de HatoControlException) |
 | Entidad-relación | finca_id en usuarios y animales |
 | Secuencia | 08 Iniciar sesión |
 | Mockup | P02 Ingreso, P05 Panel principal, P22 Vista del administrador, P25 Avisos y estados vacíos (Fase 5) |

@@ -14,7 +14,7 @@
 | Dependencias | HU-01 |
 | Repositorios | HatoControl-frontend, HatoControl-backend, HatoControl-db |
 
-**Trazabilidad con el diseño (Fases 3 y 5; vista de desarrollo v8)**
+**Trazabilidad con el diseño (Fases 3 y 5; vista de desarrollo v9 y vista lógica v3)**
 
 | Vista | Elementos |
 |---|---|
@@ -22,7 +22,7 @@
 | Contexto (flujo) | Pesos, partos, crías y leche diaria |
 | Funcional | Reproducción y leche (usa IConsultaAnimales) |
 | Lógica | Parto (madre 1 — 0..* partos; parto 0..1 — 0..* crías), Animal.admiteProposito(p) |
-| Desarrollo | Formulario (tipo parto) → ControladorReproduccion.registrarParto() → ServicioReproduccion.registrarParto() → IRepositorioAnimales.buscarPorArete(), guardar() · IRepositorioPartos.guardar(parto) |
+| Desarrollo | Formulario (tipo parto → FormularioParto) → ControladorReproduccion.registrarParto() → ServicioReproduccion.registrarParto() → IRepositorioAnimales.buscarPorArete(), guardar() · IRepositorioPartos.guardar(parto) |
 | DTO | PartoRequest (crias : List<AnimalRequest>) / PartoResponse |
 | Excepciones | RecursoNoEncontradoException (madre) · ReglaNegocioException |
 | Entidad-relación | partos, animales.parto_id |

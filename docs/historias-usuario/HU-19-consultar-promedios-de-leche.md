@@ -14,7 +14,7 @@
 | Dependencias | HU-18 |
 | Repositorios | HatoControl-frontend, HatoControl-backend, HatoControl-db |
 
-**Trazabilidad con el diseño (Fases 3 y 5; vista de desarrollo v8)**
+**Trazabilidad con el diseño (Fases 3 y 5; vista de desarrollo v9 y vista lógica v3)**
 
 | Vista | Elementos |
 |---|---|
@@ -22,7 +22,7 @@
 | Contexto (flujo) | Promedios de leche |
 | Funcional | Reproducción y leche |
 | Lógica | Parto.promedioDiarioLeche(), RegistroLeche |
-| Desarrollo | PaginaAnimal.mostrarPartosYLeche() → ControladorLeche.promedios(periodo) → ServicioLeche.promedio(periodo) → IPeriodoPromedio (PromedioSemanal, PromedioMensual, PromedioPorParto) → IRepositorioLeche.listarEntre(animalId, desde, hasta) |
+| Desarrollo | PaginaAnimal.mostrarPartosYLeche() → ControladorLeche.promedios(periodo) → ServicioLeche.promedio(periodo) → PeriodoPromedio, clase abstracta (PromedioSemanal, PromedioMensual, PromedioPorParto) → IRepositorioLeche.listarEntre(animalId, desde, hasta) |
 | DTO | PromedioLecheResponse (registros : List<LecheResponse>) |
 | Excepciones | — |
 | Entidad-relación | registros_leche |
