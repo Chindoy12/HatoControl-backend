@@ -20,7 +20,7 @@ En total son unos 32 USD al mes con `t4g.small` y unos 26 USD con `t4g.micro`. E
 ## Pasos, en orden
 
 1. **Cuenta de AWS.** Créala con el plan gratuito y activa la verificación en dos pasos (MFA) del usuario raíz. Arriba a la derecha de la consola, elige la región **N. Virginia (us-east-1)**.
-2. **Vercel.** Entra con tu GitHub. En *Add New → Project*, importa `HatoControl-frontend` y despliega (Vercel detecta Vite). Copia la dirección que te da, por ejemplo `https://hatocontrol-frontend.vercel.app`. Todavía no funciona el ingreso: falta el backend.
+2. **Vercel.** Entra con tu GitHub. En *Add New → Project*, importa `HatoControl-frontend` y despliega (Vercel detecta Vite). Copia la dirección que te da, la nuestra es `https://hato-control-one.vercel.app`. Todavía no funciona el ingreso: falta el backend.
 3. **Crear la pila.** En la consola de AWS, entra a *CloudFormation → Create stack → With new resources*.
    - Elige *Upload a template file* y sube `hatocontrol.yaml`.
    - El nombre de la pila debe ser exactamente **`hatocontrol`**.

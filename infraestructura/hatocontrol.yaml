@@ -18,7 +18,7 @@ Parameters:
   UrlFrontend:
     Type: String
     Description: Dirección de la aplicación en Vercel (sin / al final). Se usa en el enlace de recuperación.
-    Default: https://hatocontrol-frontend.vercel.app
+    Default: https://hato-control-one.vercel.app
     AllowedPattern: '^https://[^/\s]+$'
   CargarDatosDePrueba:
     Type: String
