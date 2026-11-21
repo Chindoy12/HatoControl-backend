@@ -1,0 +1,501 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: >-
+  HatoControl (Fase 12): backend Spring Boot en EC2 con Caddy (HTTPS de Let's Encrypt en un nombre sslip.io),
+  PostgreSQL 17 en RDS privada, correo de recuperación con Amazon SES, alerta de presupuesto y un rol para que
+  GitHub Actions despliegue sin claves guardadas (OIDC). El frontend se publica en Vercel.
+
+Parameters:
+  CorreoAlertas:
+    Type: String
+    Description: Correo que recibe la alerta de presupuesto.
+    AllowedPattern: '^[^@\s]+@[^@\s]+\.[^@\s]+$'
+  CorreoRemitente:
+    Type: String
+    Description: >-
+      Correo desde el que se envía la recuperación de contraseña. AWS le enviará un mensaje para verificarlo.
+      Mientras SES esté en modo de prueba, solo se puede enviar a correos verificados.
+    AllowedPattern: '^[^@\s]+@[^@\s]+\.[^@\s]+$'
+  UrlFrontend:
+    Type: String
+    Description: Dirección de la aplicación en Vercel (sin / al final). Se usa en el enlace de recuperación.
+    Default: https://hatocontrol-frontend.vercel.app
+    AllowedPattern: '^https://[^/\s]+$'
+  CargarDatosDePrueba:
+    Type: String
+    Description: si = carga la finca La Esperanza de los mockups para la presentación; no = base vacía.
+    AllowedValues: [si, 'no']
+    Default: si
+  PresupuestoMensual:
+    Type: Number
+    Description: Monto en dólares para la alerta de presupuesto (avisa al 80 % y al 100 %).
+    Default: 30
+  TipoInstancia:
+    Type: String
+    Description: Servidor del backend (los dos están incluidos en el plan gratuito de AWS).
+    AllowedValues: [t4g.small, t4g.micro]
+    Default: t4g.small
+  RepositorioBackend:
+    Type: String
+    Description: Repositorio de GitHub que puede desplegar (dueño/nombre).
+    Default: Chindoy12/HatoControl-backend
+  RepositorioBaseDatos:
+    Type: String
+    Description: Repositorio público con las migraciones de Flyway (dueño/nombre).
+    Default: Chindoy12/HatoControl-db
+  ImagenServidor:
+    Type: AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>
+    Description: Amazon Linux 2023 para procesadores ARM (Graviton). No hace falta cambiarlo.
+    Default: /aws/service/ami-amazon-linux-latest/al2023-ami-kernel-default-arm64
+
+Metadata:
+  AWS::CloudFormation::Interface:
+    ParameterGroups:
+      - Label: {default: Correos}
+        Parameters: [CorreoAlertas, CorreoRemitente]
+      - Label: {default: Aplicación}
+        Parameters: [UrlFrontend, CargarDatosDePrueba]
+      - Label: {default: Costo}
+        Parameters: [PresupuestoMensual, TipoInstancia]
+      - Label: {default: GitHub (no hace falta cambiarlos)}
+        Parameters: [RepositorioBackend, RepositorioBaseDatos, ImagenServidor]
+
+Resources:
+  # ---------- Red: una subred pública para el backend y dos privadas para la base (RNF21) ----------
+  Red:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: 10.20.0.0/16
+      EnableDnsSupport: true
+      EnableDnsHostnames: true
+      Tags: [{Key: Name, Value: hatocontrol}]
+
+  PuertaInternet:
+    Type: AWS::EC2::InternetGateway
+    Properties:
+      Tags: [{Key: Name, Value: hatocontrol}]
+
+  UnionPuertaInternet:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      VpcId: !Ref Red
+      InternetGatewayId: !Ref PuertaInternet
+
+  SubredPublica:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref Red
+      CidrBlock: 10.20.1.0/24
+      AvailabilityZone: !Select [0, !GetAZs '']
+      MapPublicIpOnLaunch: false
+      Tags: [{Key: Name, Value: hatocontrol-publica}]
+
+  SubredPrivadaA:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref Red
+      CidrBlock: 10.20.11.0/24
+      AvailabilityZone: !Select [0, !GetAZs '']
+      Tags: [{Key: Name, Value: hatocontrol-privada-a}]
+
+  SubredPrivadaB:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref Red
+      CidrBlock: 10.20.12.0/24
+      AvailabilityZone: !Select [1, !GetAZs '']
+      Tags: [{Key: Name, Value: hatocontrol-privada-b}]
+
+  TablaRutasPublica:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref Red
+      Tags: [{Key: Name, Value: hatocontrol-publica}]
+
+  RutaInternet:
+    Type: AWS::EC2::Route
+    DependsOn: UnionPuertaInternet
+    Properties:
+      RouteTableId: !Ref TablaRutasPublica
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId: !Ref PuertaInternet
+
+  AsociacionSubredPublica:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref SubredPublica
+      RouteTableId: !Ref TablaRutasPublica
+
+  # Las subredes privadas usan la tabla principal de la VPC, que no tiene salida a internet.
+
+  GrupoBackend:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Backend de HatoControl. Solo HTTP (certificado) y HTTPS. Sin SSH; se administra con Session Manager.
+      VpcId: !Ref Red
+      SecurityGroupIngress:
+        - {IpProtocol: tcp, FromPort: 80, ToPort: 80, CidrIp: 0.0.0.0/0, Description: Let's Encrypt y redireccion a HTTPS}
+        - {IpProtocol: tcp, FromPort: 443, ToPort: 443, CidrIp: 0.0.0.0/0, Description: API por HTTPS}
+      Tags: [{Key: Name, Value: hatocontrol-backend}]
+
+  GrupoBaseDatos:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Base de datos de HatoControl. Solo acepta conexiones del backend.
+      VpcId: !Ref Red
+      SecurityGroupIngress:
+        - {IpProtocol: tcp, FromPort: 5432, ToPort: 5432, SourceSecurityGroupId: !Ref GrupoBackend, Description: PostgreSQL desde el backend}
+      Tags: [{Key: Name, Value: hatocontrol-bd}]
+
+  # ---------- Base de datos: RDS PostgreSQL 17, privada; la contraseña la genera y guarda AWS ----------
+  SubredesBaseDatos:
+    Type: AWS::RDS::DBSubnetGroup
+    Properties:
+      DBSubnetGroupDescription: Subredes privadas de HatoControl
+      SubnetIds: [!Ref SubredPrivadaA, !Ref SubredPrivadaB]
+
+  BaseDatos:
+    Type: AWS::RDS::DBInstance
+    DeletionPolicy: Snapshot
+    UpdateReplacePolicy: Snapshot
+    Properties:
+      DBInstanceIdentifier: hatocontrol
+      Engine: postgres
+      EngineVersion: '17.11'
+      DBInstanceClass: db.t4g.micro
+      AllocatedStorage: '20'
+      StorageType: gp2
+      StorageEncrypted: true
+      DBName: hatocontrol
+      MasterUsername: hatocontrol
+      ManageMasterUserPassword: true
+      DBSubnetGroupName: !Ref SubredesBaseDatos
+      VPCSecurityGroups: [!Ref GrupoBaseDatos]
+      PubliclyAccessible: false
+      MultiAZ: false
+      BackupRetentionPeriod: 1
+      AutoMinorVersionUpgrade: true
+      DeletionProtection: false
+
+  # ---------- Correo de recuperación: Amazon SES por SMTP (AdaptadorCorreo) ----------
+  IdentidadCorreo:
+    Type: AWS::SES::EmailIdentity
+    Properties:
+      EmailIdentity: !Ref CorreoRemitente
+
+  UsuarioCorreo:
+    Type: AWS::IAM::User
+    Properties:
+      Policies:
+        - PolicyName: solo-enviar-correo
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action: ses:SendRawEmail
+                Resource: '*'
+                Condition:
+                  StringEquals:
+                    ses:FromAddress: !Ref CorreoRemitente
+
+  ClaveCorreo:
+    Type: AWS::IAM::AccessKey
+    Properties:
+      UserName: !Ref UsuarioCorreo
+
+  SecretoCorreo:
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Name: hatocontrol/correo
+      Description: Clave del usuario que solo envía el correo de recuperación por SES.
+      SecretString: !Sub '{"id":"${ClaveCorreo}","clave":"${ClaveCorreo.SecretAccessKey}"}'
+
+  # ---------- Servidor del backend ----------
+  Artefactos:
+    Type: AWS::S3::Bucket
+    Properties:
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault: {SSEAlgorithm: AES256}
+      LifecycleConfiguration:
+        Rules:
+          - {Id: versiones-viejas, Status: Enabled, NoncurrentVersionExpiration: {NoncurrentDays: 7}}
+
+  RolServidor:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal: {Service: ec2.amazonaws.com}
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore
+      Policies:
+        - PolicyName: hatocontrol-servidor
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action: s3:GetObject
+                Resource: !Sub '${Artefactos.Arn}/*'
+              - Effect: Allow
+                Action: secretsmanager:GetSecretValue
+                Resource:
+                  - !GetAtt BaseDatos.MasterUserSecret.SecretArn
+                  - !Ref SecretoCorreo
+
+  PerfilServidor:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      Roles: [!Ref RolServidor]
+
+  IpFija:
+    Type: AWS::EC2::EIP
+    Properties:
+      Domain: vpc
+      Tags: [{Key: Name, Value: hatocontrol}]
+
+  Servidor:
+    Type: AWS::EC2::Instance
+    DependsOn: RutaInternet
+    Properties:
+      ImageId: !Ref ImagenServidor
+      InstanceType: !Ref TipoInstancia
+      IamInstanceProfile: !Ref PerfilServidor
+      MetadataOptions: {HttpTokens: required, HttpEndpoint: enabled}
+      NetworkInterfaces:
+        - DeviceIndex: '0'
+          SubnetId: !Ref SubredPublica
+          GroupSet: [!Ref GrupoBackend]
+          AssociatePublicIpAddress: true
+      BlockDeviceMappings:
+        - DeviceName: /dev/xvda
+          Ebs: {VolumeSize: 20, VolumeType: gp3, Encrypted: true}
+      Tags: [{Key: Name, Value: hatocontrol-backend}]
+      UserData:
+        Fn::Base64: !Sub
+          - |
+            #!/bin/bash
+            # Prepara el servidor de HatoControl. Se ejecuta una sola vez, al crear la instancia.
+            set -euxo pipefail
+            exec > /var/log/hatocontrol-instalacion.log 2>&1
+
+            dnf install -y docker jq python3
+            systemctl enable --now docker
+            dnf install -y java-25-amazon-corretto-headless || {
+              mkdir -p /opt/java
+              curl -fsSL https://corretto.aws/downloads/latest/amazon-corretto-25-aarch64-linux-jdk.tar.gz | tar xz -C /opt/java --strip-components=1
+              ln -sf /opt/java/bin/java /usr/bin/java
+            }
+            curl -fsSL https://github.com/caddyserver/caddy/releases/download/v2.10.2/caddy_2.10.2_linux_arm64.tar.gz | tar xz -C /usr/local/bin caddy
+
+            useradd --system --home /opt/hatocontrol --shell /sbin/nologin hatocontrol || true
+            useradd --system --home /var/lib/caddy --create-home --shell /sbin/nologin caddy || true
+            mkdir -p /opt/hatocontrol /etc/caddy
+
+            cat > /opt/hatocontrol/configuracion <<'FIN'
+            REGION=${AWS::Region}
+            BUCKET=${Artefactos}
+            BD_HOST=${BaseDatos.Endpoint.Address}
+            SECRETO_BD=${SecretoBd}
+            SECRETO_CORREO=${SecretoCorreo}
+            URL_FRONTEND=${UrlFrontend}
+            CORREO_REMITENTE=${CorreoRemitente}
+            CARGAR_DATOS_PRUEBA=${CargarDatosDePrueba}
+            REPOSITORIO_BD=${RepositorioBaseDatos}
+            FIN
+
+            # Contraseña SMTP de SES a partir de la clave del usuario de correo (algoritmo publicado por AWS).
+            cat > /opt/hatocontrol/clave_smtp.py <<'FIN'
+            import base64, hashlib, hmac, sys
+            def firmar(clave, mensaje):
+                return hmac.new(clave, mensaje.encode('utf-8'), hashlib.sha256).digest()
+            secreto, region = sys.argv[1], sys.argv[2]
+            firma = firmar(('AWS4' + secreto).encode('utf-8'), '11111111')
+            for parte in (region, 'ses', 'aws4_request', 'SendRawEmail'):
+                firma = firmar(firma, parte)
+            print(base64.b64encode(bytes([0x04]) + firma).decode('utf-8'))
+            FIN
+
+            cat > /opt/hatocontrol/arrancar.sh <<'FIN'
+            #!/bin/bash
+            # Lee las credenciales de Secrets Manager (nunca quedan en disco) y arranca el backend.
+            set -euo pipefail
+            source /opt/hatocontrol/configuracion
+            BD=$(aws secretsmanager get-secret-value --region "$REGION" --secret-id "$SECRETO_BD" --query SecretString --output text)
+            CORREO=$(aws secretsmanager get-secret-value --region "$REGION" --secret-id "$SECRETO_CORREO" --query SecretString --output text)
+            export BD_URL="jdbc:postgresql://$BD_HOST:5432/hatocontrol"
+            export BD_USUARIO=$(jq -r .username <<< "$BD")
+            export BD_CONTRASENA=$(jq -r .password <<< "$BD")
+            export CORREO_SERVIDOR="email-smtp.$REGION.amazonaws.com" CORREO_PUERTO=587
+            export CORREO_USUARIO=$(jq -r .id <<< "$CORREO")
+            export CORREO_CONTRASENA=$(python3 /opt/hatocontrol/clave_smtp.py "$(jq -r .clave <<< "$CORREO")" "$REGION")
+            export URL_FRONTEND CORREO_REMITENTE
+            export SERVER_FORWARD_HEADERS_STRATEGY=native
+            exec java -Xmx600m \
+              -Dspring.mail.properties.mail.smtp.auth=true \
+              -Dspring.mail.properties.mail.smtp.starttls.enable=true \
+              -Dspring.mail.properties.mail.smtp.starttls.required=true \
+              -jar /opt/hatocontrol/hatocontrol.jar
+            FIN
+
+            cat > /opt/hatocontrol/desplegar.sh <<'FIN'
+            #!/bin/bash
+            # Lo ejecuta GitHub Actions por Session Manager: migra la base con Flyway y reinicia el backend con el jar nuevo.
+            set -euo pipefail
+            source /opt/hatocontrol/configuracion
+            aws s3 cp "s3://$BUCKET/hatocontrol.jar" /opt/hatocontrol/nuevo.jar --region "$REGION" --only-show-errors
+            rm -rf /tmp/bd && mkdir -p /tmp/bd
+            curl -fsSL "https://codeload.github.com/$REPOSITORIO_BD/tar.gz/refs/heads/main" | tar xz -C /tmp/bd --strip-components=1
+            UBICACIONES=filesystem:/proyecto/migraciones
+            if [ "$CARGAR_DATOS_PRUEBA" = si ]; then UBICACIONES="$UBICACIONES,filesystem:/proyecto/datos-prueba"; fi
+            BD=$(aws secretsmanager get-secret-value --region "$REGION" --secret-id "$SECRETO_BD" --query SecretString --output text)
+            docker run --rm -v /tmp/bd:/proyecto \
+              -e FLYWAY_URL="jdbc:postgresql://$BD_HOST:5432/hatocontrol" \
+              -e FLYWAY_USER="$(jq -r .username <<< "$BD")" \
+              -e FLYWAY_PASSWORD="$(jq -r .password <<< "$BD")" \
+              -e FLYWAY_LOCATIONS="$UBICACIONES" \
+              flyway/flyway:11 migrate
+            mv /opt/hatocontrol/nuevo.jar /opt/hatocontrol/hatocontrol.jar
+            chown hatocontrol:hatocontrol /opt/hatocontrol/hatocontrol.jar
+            systemctl restart hatocontrol
+            for i in $(seq 1 60); do
+              if [ "$(curl -s -o /dev/null -w '%{http_code}' http://localhost:8080/api/sesion)" = 401 ]; then
+                echo "HatoControl desplegado y respondiendo."; exit 0
+              fi
+              sleep 2
+            done
+            echo "El backend no respondió a tiempo."; journalctl -u hatocontrol -n 80 --no-pager; exit 1
+            FIN
+            chmod 750 /opt/hatocontrol/*.sh
+            chown -R hatocontrol:hatocontrol /opt/hatocontrol
+
+            cat > /etc/systemd/system/hatocontrol.service <<'FIN'
+            [Unit]
+            Description=HatoControl backend
+            After=network-online.target
+            Wants=network-online.target
+            ConditionPathExists=/opt/hatocontrol/hatocontrol.jar
+            [Service]
+            User=hatocontrol
+            ExecStart=/opt/hatocontrol/arrancar.sh
+            Restart=on-failure
+            RestartSec=10
+            [Install]
+            WantedBy=multi-user.target
+            FIN
+
+            cat > /etc/caddy/Caddyfile <<'FIN'
+            ${Dominio} {
+              reverse_proxy localhost:8080
+            }
+            FIN
+
+            cat > /etc/systemd/system/caddy.service <<'FIN'
+            [Unit]
+            Description=Caddy (HTTPS de HatoControl)
+            After=network-online.target
+            Wants=network-online.target
+            [Service]
+            User=caddy
+            Environment=XDG_DATA_HOME=/var/lib/caddy XDG_CONFIG_HOME=/var/lib/caddy
+            AmbientCapabilities=CAP_NET_BIND_SERVICE
+            ExecStart=/usr/local/bin/caddy run --config /etc/caddy/Caddyfile
+            Restart=on-failure
+            [Install]
+            WantedBy=multi-user.target
+            FIN
+
+            systemctl daemon-reload
+            systemctl enable hatocontrol
+            systemctl enable --now caddy
+          - Dominio: !Sub 'api.${IpFija}.sslip.io'
+            SecretoBd: !GetAtt BaseDatos.MasterUserSecret.SecretArn
+
+  AsociacionIpFija:
+    Type: AWS::EC2::EIPAssociation
+    Properties:
+      AllocationId: !GetAtt IpFija.AllocationId
+      InstanceId: !Ref Servidor
+
+  # ---------- GitHub Actions despliega sin claves guardadas (OIDC) ----------
+  ProveedorGithub:
+    Type: AWS::IAM::OIDCProvider
+    Properties:
+      Url: https://token.actions.githubusercontent.com
+      ClientIdList: [sts.amazonaws.com]
+      ThumbprintList: [6938fd4d98bab03faadb97b34396831e3780aea1]
+
+  RolDespliegue:
+    Type: AWS::IAM::Role
+    Properties:
+      Description: Lo usa GitHub Actions del repositorio del backend (rama main) para desplegar.
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal: {Federated: !Ref ProveedorGithub}
+            Action: sts:AssumeRoleWithWebIdentity
+            Condition:
+              StringEquals:
+                token.actions.githubusercontent.com:aud: sts.amazonaws.com
+                token.actions.githubusercontent.com:sub: !Sub 'repo:${RepositorioBackend}:ref:refs/heads/main'
+      Policies:
+        - PolicyName: desplegar-hatocontrol
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action: s3:PutObject
+                Resource: !Sub '${Artefactos.Arn}/hatocontrol.jar'
+              - Effect: Allow
+                Action: ssm:SendCommand
+                Resource:
+                  - !Sub 'arn:${AWS::Partition}:ec2:${AWS::Region}:${AWS::AccountId}:instance/${Servidor}'
+                  - !Sub 'arn:${AWS::Partition}:ssm:${AWS::Region}::document/AWS-RunShellScript'
+              - Effect: Allow
+                Action: ssm:GetCommandInvocation
+                Resource: '*'
+              - Effect: Allow
+                Action: cloudformation:DescribeStacks
+                Resource: !Ref AWS::StackId
+
+  # ---------- Alerta de presupuesto (RNF14) ----------
+  Presupuesto:
+    Type: AWS::Budgets::Budget
+    Properties:
+      Budget:
+        BudgetName: hatocontrol-mensual
+        BudgetType: COST
+        TimeUnit: MONTHLY
+        BudgetLimit: {Amount: !Ref PresupuestoMensual, Unit: USD}
+      NotificationsWithSubscribers:
+        - Notification: {NotificationType: ACTUAL, ComparisonOperator: GREATER_THAN, Threshold: 80, ThresholdType: PERCENTAGE}
+          Subscribers: [{SubscriptionType: EMAIL, Address: !Ref CorreoAlertas}]
+        - Notification: {NotificationType: ACTUAL, ComparisonOperator: GREATER_THAN, Threshold: 100, ThresholdType: PERCENTAGE}
+          Subscribers: [{SubscriptionType: EMAIL, Address: !Ref CorreoAlertas}]
+        - Notification: {NotificationType: FORECASTED, ComparisonOperator: GREATER_THAN, Threshold: 100, ThresholdType: PERCENTAGE}
+          Subscribers: [{SubscriptionType: EMAIL, Address: !Ref CorreoAlertas}]
+
+Outputs:
+  UrlBackend:
+    Description: Dirección HTTPS del backend. Va en vercel.json del frontend.
+    Value: !Sub 'https://api.${IpFija}.sslip.io'
+  RolDespliegue:
+    Description: Copia este valor en la variable AWS_ROL_DESPLIEGUE del repositorio HatoControl-backend en GitHub.
+    Value: !GetAtt RolDespliegue.Arn
+  Artefactos:
+    Description: Bucket privado donde GitHub Actions deja el jar.
+    Value: !Ref Artefactos
+  Servidor:
+    Description: Instancia del backend (se administra con Session Manager, sin SSH).
+    Value: !Ref Servidor
+  BaseDatos:
+    Description: Dirección privada de la base de datos (no responde desde internet).
+    Value: !GetAtt BaseDatos.Endpoint.Address

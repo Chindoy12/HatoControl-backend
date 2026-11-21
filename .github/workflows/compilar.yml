@@ -61,6 +61,13 @@ jobs:
                   clase = caso.get('classname').split('.')[-1]
                   print(f"PRUEBA | {clase} | {caso.get('name')} | {'FALLA' if fallo else 'PASA'} | {caso.get('time')} s")
           PY
+      - name: Guardar el jar para el despliegue
+        if: github.event_name == 'push'
+        uses: actions/upload-artifact@v4
+        with:
+          name: jar
+          path: target/hatocontrol-backend-*.jar
+          retention-days: 7
       - name: Publicar el jar de prueba
         if: github.event_name == 'push'
         env:
@@ -68,3 +75,40 @@ jobs:
         run: |
           gh release view prueba >/dev/null 2>&1 || gh release create prueba --prerelease --title "Versión de prueba" --notes "Jar compilado automáticamente para revisar el frontend. No es una entrega."
           gh release upload prueba target/hatocontrol-backend-*.jar --clobber
+
+  # Fase 12: despliega en AWS con el rol que crea infraestructura/hatocontrol.yaml (OIDC, sin claves guardadas).
+  # Solo corre cuando existe la variable del repositorio AWS_ROL_DESPLIEGUE.
+  desplegar:
+    needs: compilar
+    if: github.event_name == 'push' && vars.AWS_ROL_DESPLIEGUE != ''
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    concurrency: despliegue
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: jar
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ vars.AWS_ROL_DESPLIEGUE }}
+          aws-region: ${{ vars.AWS_REGION || 'us-east-1' }}
+      - name: Subir el jar y desplegar en el servidor
+        run: |
+          salidas=$(aws cloudformation describe-stacks --stack-name hatocontrol --query 'Stacks[0].Outputs' --output json)
+          salida() { jq -r --arg k "$1" '.[] | select(.OutputKey == $k) | .OutputValue' <<< "$salidas"; }
+          bucket=$(salida Artefactos); servidor=$(salida Servidor); url=$(salida UrlBackend)
+          aws s3 cp hatocontrol-backend-*.jar "s3://$bucket/hatocontrol.jar" --only-show-errors
+          comando=$(aws ssm send-command --instance-ids "$servidor" --document-name AWS-RunShellScript \
+            --comment "Despliegue ${GITHUB_SHA::7}" --timeout-seconds 900 \
+            --parameters 'commands=["/opt/hatocontrol/desplegar.sh"]' --query Command.CommandId --output text)
+          aws ssm wait command-executed --command-id "$comando" --instance-id "$servidor" || true
+          aws ssm get-command-invocation --command-id "$comando" --instance-id "$servidor" \
+            --query '[StandardOutputContent, StandardErrorContent]' --output text
+          estado=$(aws ssm get-command-invocation --command-id "$comando" --instance-id "$servidor" --query Status --output text)
+          echo "Estado del despliegue: $estado"
+          test "$estado" = Success
+          codigo=$(curl -s -o /dev/null -w '%{http_code}' "$url/api/sesion")
+          echo "$url/api/sesion respondió $codigo (se espera 401 sin sesión)"
+          test "$codigo" = 401
