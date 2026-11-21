@@ -25,6 +25,11 @@ public class RepositorioUsuariosBD implements IRepositorioUsuarios {
     }
 
     @Override
+    public Optional<Usuario> buscarPorId(Long id) {
+        return Optional.ofNullable(em.find(Usuario.class, id));
+    }
+
+    @Override
     public Optional<Usuario> buscarPorCorreo(String correo) {
         return em.createQuery("select u from Usuario u join fetch u.finca where lower(u.correo) = lower(:correo)", Usuario.class)
                 .setParameter("correo", correo)
