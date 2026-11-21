@@ -14,7 +14,7 @@
 | Dependencias | HU-01 |
 | Repositorios | HatoControl-frontend, HatoControl-backend, HatoControl-db |
 
-**Trazabilidad con el diseño (Fase 3)**
+**Trazabilidad con el diseño (Fases 3 y 5; vista de desarrollo v8)**
 
 | Vista | Elementos |
 |---|---|
@@ -27,7 +27,7 @@
 | Excepciones | ReglaNegocioException (arete duplicado, fecha futura) · RecursoNoEncontradoException |
 | Entidad-relación | animales |
 | Secuencia | — |
-| Mockup | Pendiente (Fase 5) |
+| Mockup | P07 Registrar animal, P16 Editar animal (Fase 5) |
 | Implementación | Pendiente (Fases 8 a 10) |
 
 **Validación INVEST**
@@ -78,3 +78,15 @@ Característica: Actualización de animales
 **Supuestos / preguntas abiertas**
 - El arete es único dentro de la finca (RN01).
 - El cambio de propósito a engorde se trata en HU-15.
+
+**Implementación y pruebas (Fases 9 a 11)**
+
+Todos los criterios pasan (21/11/2026). `huNNN_cM` está en `CriteriosAceptacionTest` (HatoControl-backend); las pruebas del navegador, en `HatoControl-frontend/pruebas`.
+
+| Criterio | Prueba en la API | Prueba en el navegador |
+|---|---|---|
+| C1 · Actualizar datos | `hu004_c1_actualizarDatos` | HU_004 C1 · Actualizar datos muestra la confirmación |
+| C2 · Cambiar el arete por uno disponible | `hu004_c2_cambiarAreteDisponible` | — |
+| C3 · Cambiar el arete por uno ya registrado | `hu004_c3_cambiarAreteOcupado` | HU_004 C3 · Arete ocupado: se conserva el anterior |
+| C4 · Cambiar el sexo | `hu004_c4_cambiarSexo` | HU_004 C4 · Al cambiar el sexo se pide elegir de nuevo el propósito |
+| C5 · Fecha de nacimiento futura | `hu004_c5_fechaFutura` | — |

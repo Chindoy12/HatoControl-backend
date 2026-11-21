@@ -14,7 +14,7 @@
 | Dependencias | HU-01 |
 | Repositorios | HatoControl-frontend, HatoControl-backend, HatoControl-db |
 
-**Trazabilidad con el diseño (Fase 3)**
+**Trazabilidad con el diseño (Fases 3 y 5; vista de desarrollo v8)**
 
 | Vista | Elementos |
 |---|---|
@@ -27,7 +27,7 @@
 | Excepciones | ReglaNegocioException (ya es de engorde) |
 | Entidad-relación | animales |
 | Secuencia | — |
-| Mockup | Pendiente (Fase 5) |
+| Mockup | P08 Página del animal, P17 Página de un macho, P18 Eliminar y pasar a engorde (Fase 5) |
 | Implementación | Pendiente (Fases 8 a 10) |
 
 **Validación INVEST**
@@ -67,3 +67,13 @@ Característica: Cambio de propósito a engorde
 
 **Supuestos / preguntas abiertas**
 - Ninguno.
+
+**Implementación y pruebas (Fases 9 a 11)**
+
+Todos los criterios pasan (21/11/2026). `huNNN_cM` está en `CriteriosAceptacionTest` (HatoControl-backend); las pruebas del navegador, en `HatoControl-frontend/pruebas`.
+
+| Criterio | Prueba en la API | Prueba en el navegador |
+|---|---|---|
+| C1 · Pasar un animal a engorde | `hu015_c1_pasarAEngorde` | HU_015 C1 · Pasar a engorde con confirmación; conserva el historial |
+| C2 · Ya no se registra leche después del cambio | `hu015_c2_sinLecheDespuesDelCambio` | — |
+| C3 · Cambio no permitido | `hu015_c3_cambioNoPermitido` | HU_015 C3 · Un animal de engorde no ofrece cambio de propósito |

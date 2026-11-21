@@ -14,7 +14,7 @@
 | Dependencias | HU-01 |
 | Repositorios | HatoControl-frontend, HatoControl-backend, HatoControl-db |
 
-**Trazabilidad con el diseño (Fase 3)**
+**Trazabilidad con el diseño (Fases 3 y 5; vista de desarrollo v8)**
 
 | Vista | Elementos |
 |---|---|
@@ -27,7 +27,7 @@
 | Excepciones | RecursoNoEncontradoException |
 | Entidad-relación | animales, registros_sanitarios, registros_peso, partos, registros_leche |
 | Secuencia | — |
-| Mockup | Pendiente (Fase 5) |
+| Mockup | P08 Página del animal, P17 Página de un macho (Fase 5) |
 | Implementación | Pendiente (Fases 8 a 10) |
 
 **Validación INVEST**
@@ -71,3 +71,14 @@ Característica: Página del animal
 
 **Supuestos / preguntas abiertas**
 - La página se abre dentro del sistema, no en otra pestaña del navegador (decisión de la Fase 2).
+
+**Implementación y pruebas (Fases 9 a 11)**
+
+Todos los criterios pasan (21/11/2026). `huNNN_cM` está en `CriteriosAceptacionTest` (HatoControl-backend); las pruebas del navegador, en `HatoControl-frontend/pruebas`.
+
+| Criterio | Prueba en la API | Prueba en el navegador |
+|---|---|---|
+| C1 · Abrir la página de una hembra | — | HU_013 C1 · La página de una hembra muestra datos, sanidad, peso, partos y leche |
+| C2 · Abrir la página de un macho | — | HU_013 C2 · La página de un macho no muestra partos ni leche |
+| C3 · Secciones sin datos | — | HU_013 C3 y HU_011 C2 · Secciones sin datos dicen «sin registros» y no hay gráfica inventada |
+| C4 · Volver al listado | — | HU_013 C4 · Volver al listado |

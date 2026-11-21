@@ -39,7 +39,11 @@ Sistema de Gestión y Control Ganadero. Versión 3 (15 de noviembre de 2026): 24
 
 Cuando falten datos, el dashboard, la ficha consolidada, los historiales y los reportes muestran **«sin registros»** en lugar de valores vacíos, estimados o inventados.
 
-## Supuestos por confirmar
+## Supuestos confirmados en la implementación
 
-1. El enlace para recuperar la contraseña vence a los 30 minutos (RNF23, propuesta).
-2. Para los promedios de leche, la semana va de lunes a domingo y el mes es el mes calendario (HU-19, propuesta).
+1. El enlace para recuperar la contraseña vence a los 30 minutos y sirve una sola vez (RNF23). Prueba: `SeguridadTest.rnf23_*`.
+2. Para los promedios de leche, la semana va de lunes a domingo y el mes es el mes calendario (HU-19). Prueba: `hu019_c1` a `hu019_c4`.
+
+## Estado
+
+Los 90 criterios de aceptación de las 24 historias pasan con pruebas automáticas (informe de pruebas de la Fase 11). Cada archivo HU-NN tiene al final la tabla «Implementación y pruebas».

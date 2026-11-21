@@ -14,7 +14,7 @@
 | Dependencias | HU-01, HU-06, HU-08, HU-10 |
 | Repositorios | HatoControl-frontend, HatoControl-backend, HatoControl-db |
 
-**Trazabilidad con el diseño (Fase 3)**
+**Trazabilidad con el diseño (Fases 3 y 5; vista de desarrollo v8)**
 
 | Vista | Elementos |
 |---|---|
@@ -27,7 +27,7 @@
 | Excepciones | AccesoDenegadoException (administrador) |
 | Entidad-relación | animales, registros_sanitarios, registros_peso |
 | Secuencia | — |
-| Mockup | Pendiente (Fase 5) |
+| Mockup | P12 Dashboard, P25 Avisos y estados vacíos (Fase 5) |
 | Implementación | Pendiente (Fases 8 a 10) |
 
 **Validación INVEST**
@@ -65,3 +65,13 @@ Característica: Dashboard de la finca
 
 **Supuestos / preguntas abiertas**
 - El dashboard no incluye todavía indicadores de partos ni de leche; ningún requerimiento los pide.
+
+**Implementación y pruebas (Fases 9 a 11)**
+
+Todos los criterios pasan (21/11/2026). `huNNN_cM` está en `CriteriosAceptacionTest` (HatoControl-backend); las pruebas del navegador, en `HatoControl-frontend/pruebas`.
+
+| Criterio | Prueba en la API | Prueba en el navegador |
+|---|---|---|
+| C1 · Mostrar el resumen general | `hu012_c1_resumenGeneral` | HU_012 C1 · El dashboard muestra el resumen, las actividades y el último peso |
+| C2 · Las actividades programadas no se cuentan como realizadas | `hu012_c2_programadasNoSeCuentan` | HU_012 C2 · Una vacuna programada no se cuenta como realizada |
+| C3 · Sección sin datos | `hu012_c3_seccionSinDatos` | HU_012 C3 · Secciones sin datos dicen «sin registros» |

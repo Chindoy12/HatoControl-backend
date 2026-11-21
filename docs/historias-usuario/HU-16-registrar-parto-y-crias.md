@@ -14,7 +14,7 @@
 | Dependencias | HU-01 |
 | Repositorios | HatoControl-frontend, HatoControl-backend, HatoControl-db |
 
-**Trazabilidad con el diseño (Fase 3)**
+**Trazabilidad con el diseño (Fases 3 y 5; vista de desarrollo v8)**
 
 | Vista | Elementos |
 |---|---|
@@ -27,7 +27,7 @@
 | Excepciones | RecursoNoEncontradoException (madre) · ReglaNegocioException |
 | Entidad-relación | partos, animales.parto_id |
 | Secuencia | 09 Registrar parto |
-| Mockup | Pendiente (Fase 5) |
+| Mockup | P11 Registrar parto y crías, P20 Parto: validaciones (Fase 5) |
 | Implementación | Pendiente (Fases 8 a 10) |
 
 **Validación INVEST**
@@ -91,3 +91,17 @@ Característica: Registro de partos y crías
 
 **Supuestos / preguntas abiertas**
 - La cría necesita un código de arete al registrarse (RN01).
+
+**Implementación y pruebas (Fases 9 a 11)**
+
+Todos los criterios pasan (21/11/2026). `huNNN_cM` está en `CriteriosAceptacionTest` (HatoControl-backend); las pruebas del navegador, en `HatoControl-frontend/pruebas`.
+
+| Criterio | Prueba en la API | Prueba en el navegador |
+|---|---|---|
+| C1 · Registrar un parto con su cría | `hu016_c1_partoConCria` | HU_016 C1 y C2 · Parto con una cría; el propósito de la cría depende de su sexo |
+| C2 · Propósito de la cría según el sexo | `hu016_c2_propositoCria` | HU_016 C1 y C2 · Parto con una cría; el propósito de la cría depende de su sexo |
+| C3 · Parto con dos crías | `hu016_c3_dosCrias` | — |
+| C4 · Parto sin crías | `hu016_c4_partoSinCrias` | HU_016 C4 · Parto sin crías |
+| C5 · Madre inválida | `hu016_c5_madreInvalida` | — |
+| C6 · Fecha de parto futura | `hu016_c6_fechaFutura` | HU_016 C6 · Fecha de parto futura |
+| C7 · Arete de la cría duplicado | `hu016_c7_areteCriaDuplicado` | — |

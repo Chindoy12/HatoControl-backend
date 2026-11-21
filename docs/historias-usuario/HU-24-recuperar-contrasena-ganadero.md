@@ -14,7 +14,7 @@
 | Dependencias | HU-20 |
 | Repositorios | HatoControl-frontend, HatoControl-backend, HatoControl-db |
 
-**Trazabilidad con el diseño (Fase 3)**
+**Trazabilidad con el diseño (Fases 3 y 5; vista de desarrollo v8)**
 
 | Vista | Elementos |
 |---|---|
@@ -22,12 +22,12 @@
 | Contexto (flujo) | Enlace de recuperación de contraseña (Servicio de correo) |
 | Funcional | Fincas, cuentas y acceso → Servicio de correo |
 | Lógica | Usuario |
-| Desarrollo | PaginaIngreso.recuperarContrasena() + Formulario (tipo contraseña) → ControladorAutenticacion.solicitarRecuperacion(), restablecerConEnlace() → ServicioAutenticacion.recuperarContrasena() → IRepositorioTokens.guardar(), buscarVigente(), marcarUsado() · IServicioCorreo.enviarEnlace() (AdaptadorCorreo) · IHashContrasenas.cifrar() |
+| Desarrollo | PaginaIngreso.recuperarContrasena() + Formulario (tipo contraseña) → ControladorAutenticacion.solicitarRecuperacion(), restablecerConEnlace() → ServicioAutenticacion.recuperarContrasena(), restablecerConEnlace(token, contrasena) → IRepositorioTokens.guardar(), buscarVigente(), marcarUsado() · IServicioCorreo.enviarEnlace() (AdaptadorCorreo) · IHashContrasenas.cifrar() |
 | DTO | IngresoRequest (correo, contrasena nueva) |
 | Excepciones | ReglaNegocioException (enlace vencido o usado) |
 | Entidad-relación | tokens_recuperacion, usuarios |
 | Secuencia | — |
-| Mockup | Pendiente (Fase 5) |
+| Mockup | P01 Inicio, P04 Recuperar contraseña (Fase 5) |
 | Implementación | Pendiente (Fases 8 a 10) |
 
 **Validación INVEST**
@@ -71,3 +71,14 @@ Característica: Recuperación de contraseña
 - Los administradores no usan esta opción; su contraseña la restablece el ganadero (HU-23).
 - El código del enlace viaja en la dirección del enlace; la contraseña nueva nunca va en la URL (RNF22).
 - Los 30 minutos son una propuesta (RNF23).
+
+**Implementación y pruebas (Fases 9 a 11)**
+
+Todos los criterios pasan (21/11/2026). `huNNN_cM` está en `CriteriosAceptacionTest` (HatoControl-backend); las pruebas del navegador, en `HatoControl-frontend/pruebas`.
+
+| Criterio | Prueba en la API | Prueba en el navegador |
+|---|---|---|
+| C1 · Solicitar la recuperación | `hu024_c1_solicitarRecuperacion` | HU_024 C1 y C4 · La solicitud responde lo mismo para cualquier correo |
+| C2 · Crear la contraseña nueva | `hu024_c2_crearContrasenaNueva` | HU_024 C2 · Las dos contraseñas deben coincidir |
+| C3 · Enlace vencido o ya usado | `hu024_c3_enlaceVencidoOUsado` | HU_024 C3 · Un enlace vencido o usado pide solicitar uno nuevo |
+| C4 · Correo que no corresponde a un ganadero | `hu024_c4_correoNoGanadero` | HU_024 C1 y C4 · La solicitud responde lo mismo para cualquier correo |
