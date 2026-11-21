@@ -50,6 +50,17 @@ jobs:
           cache: maven
       - name: Compilar y ejecutar pruebas
         run: mvn -B -ntp verify
+      - name: Listar el resultado de cada prueba
+        if: always()
+        run: |
+          python3 - <<'PY'
+          import glob, xml.etree.ElementTree as ET
+          for archivo in sorted(glob.glob('target/surefire-reports/TEST-*.xml')):
+              for caso in ET.parse(archivo).getroot().iter('testcase'):
+                  fallo = caso.find('failure') is not None or caso.find('error') is not None
+                  clase = caso.get('classname').split('.')[-1]
+                  print(f"PRUEBA | {clase} | {caso.get('name')} | {'FALLA' if fallo else 'PASA'} | {caso.get('time')} s")
+          PY
       - name: Publicar el jar de prueba
         if: github.event_name == 'push'
         env:
