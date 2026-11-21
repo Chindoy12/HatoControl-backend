@@ -84,7 +84,7 @@ class CapacidadTest {
                 where f.nombre like 'Capacidad %'""");
         bd.update("""
                 insert into registros_sanitarios (animal_id, tipo, descripcion, fecha_programada, fecha_realizacion, estado, observaciones)
-                select a.id, 'VACUNA', 'Aftosa ciclo I', current_date + (a.id % 20) - 5, null, 'PROGRAMADA', null
+                select a.id, 'VACUNA', 'Aftosa ciclo I', current_date + (a.id % 20)::int - 5, null, 'PROGRAMADA', null
                 from animales a join fincas f on f.id = a.finca_id
                 where f.nombre like 'Capacidad %' and a.id % 4 = 0""");
     }
