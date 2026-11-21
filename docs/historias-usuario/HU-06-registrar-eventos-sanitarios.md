@@ -14,7 +14,7 @@
 | Dependencias | HU-01 |
 | Repositorios | HatoControl-frontend, HatoControl-backend, HatoControl-db |
 
-**Trazabilidad con el diseño (Fase 3)**
+**Trazabilidad con el diseño (Fases 3 y 5; vista de desarrollo v8)**
 
 | Vista | Elementos |
 |---|---|
@@ -22,12 +22,12 @@
 | Contexto (flujo) | Vacunas, enfermedades, tratamientos y actividades |
 | Funcional | Control sanitario (usa IConsultaAnimales) |
 | Lógica | RegistroSanitario · enum TipoEventoSanitario, EstadoActividad |
-| Desarrollo | Formulario (tipo sanitario) → ControladorSanitario.registrarEvento() → ServicioSanitario.registrarEvento() → IRepositorioSanitario.guardar(registro) |
+| Desarrollo | PaginaSanidad + Formulario (tipo sanitario) → ControladorSanitario.registrarEvento() → ServicioSanitario.registrarEvento() → IRepositorioSanitario.guardar(registro) |
 | DTO | EventoSanitarioRequest / EventoSanitarioResponse |
 | Excepciones | RecursoNoEncontradoException (animal no seleccionado o inexistente) |
 | Entidad-relación | registros_sanitarios |
 | Secuencia | — |
-| Mockup | Pendiente (Fase 5) |
+| Mockup | P09 Sanidad y actividades, P19 Sanidad: realizar y avisos (Fase 5) |
 | Implementación | Pendiente (Fases 8 a 10) |
 
 **Validación INVEST**
@@ -64,3 +64,12 @@ Característica: Registro sanitario
 
 **Supuestos / preguntas abiertas**
 - Las actividades futuras (por ejemplo, la próxima vacuna) se registran en HU-08.
+
+**Implementación y pruebas (Fases 9 a 11)**
+
+Todos los criterios pasan (21/11/2026). `huNNN_cM` está en `CriteriosAceptacionTest` (HatoControl-backend); las pruebas del navegador, en `HatoControl-frontend/pruebas`.
+
+| Criterio | Prueba en la API | Prueba en el navegador |
+|---|---|---|
+| C1 · Registrar un evento sanitario | `hu006_c1_registrarEvento` | HU_006 C1 · Registrar una enfermedad realizada muestra la confirmación |
+| C2 · Animal no seleccionado o inexistente | `hu006_c2_animalInexistente` | HU_006 C2 · Sin animal seleccionado no se guarda |

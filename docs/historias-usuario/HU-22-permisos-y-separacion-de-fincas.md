@@ -14,7 +14,7 @@
 | Dependencias | HU-21 |
 | Repositorios | HatoControl-frontend, HatoControl-backend |
 
-**Trazabilidad con el diseño (Fase 3)**
+**Trazabilidad con el diseño (Fases 3 y 5; vista de desarrollo v8)**
 
 | Vista | Elementos |
 |---|---|
@@ -22,12 +22,12 @@
 | Contexto (flujo) | — |
 | Funcional | ISesion, requerida por los cinco módulos |
 | Lógica | Finca (cada registro pertenece a una finca) · enum Rol |
-| Desarrollo | FiltroAutenticacion.validarSesion(), obtenerFinca() → ControlPermisos.verificar(rol, funcion) · todos los IRepositorio… reciben fincaId |
+| Desarrollo | Encabezado.mostrarMenu(rol) · FiltroAutenticacion.validarSesion(), obtenerFinca() → ServicioAutenticacion.validarCuentaActiva(usuarioId) → IRepositorioUsuarios.buscarPorId(id) · ControlPermisos.verificar(rol, funcion) · todos los IRepositorio… reciben fincaId |
 | DTO | SesionResponse (rol) |
 | Excepciones | AccesoDenegadoException → ManejadorExcepciones.manejarAccesoDenegado() |
 | Entidad-relación | finca_id en usuarios y animales |
 | Secuencia | 08 Iniciar sesión |
-| Mockup | Pendiente (Fase 5) |
+| Mockup | P02 Ingreso, P05 Panel principal, P22 Vista del administrador, P25 Avisos y estados vacíos (Fase 5) |
 | Implementación | Pendiente (Fases 8 a 10) |
 
 **Validación INVEST**
@@ -72,3 +72,14 @@ Característica: Permisos y separación de fincas
 
 **Supuestos / preguntas abiertas**
 - Ninguno.
+
+**Implementación y pruebas (Fases 9 a 11)**
+
+Todos los criterios pasan (21/11/2026). `huNNN_cM` está en `CriteriosAceptacionTest` (HatoControl-backend); las pruebas del navegador, en `HatoControl-frontend/pruebas`.
+
+| Criterio | Prueba en la API | Prueba en el navegador |
+|---|---|---|
+| C1 · Funciones reservadas al ganadero | — | HU_022 C1 · El administrador no ve Dashboard ni Administradores |
+| C2 · Funciones del administrador | `hu022_c2_funcionesDelAdministrador` | — |
+| C3 · Intento directo de una función no permitida | `hu022_c3_intentoDirectoRechazado` | HU_022 C3 · Si el administrador escribe la dirección, se le niega y no cambia nada |
+| C4 · Datos de otra finca | `hu022_c4_datosDeOtraFinca` | HU_022 C4 · Cada finca ve solo sus animales |

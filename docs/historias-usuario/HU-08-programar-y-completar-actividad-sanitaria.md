@@ -14,7 +14,7 @@
 | Dependencias | HU-01 |
 | Repositorios | HatoControl-frontend, HatoControl-backend, HatoControl-db |
 
-**Trazabilidad con el diseño (Fase 3)**
+**Trazabilidad con el diseño (Fases 3 y 5; vista de desarrollo v8)**
 
 | Vista | Elementos |
 |---|---|
@@ -22,12 +22,12 @@
 | Contexto (flujo) | Vacunas, enfermedades, tratamientos y actividades |
 | Funcional | Control sanitario |
 | Lógica | RegistroSanitario.marcarRealizada(fecha) · fechaProgramada y fechaRealizacion [0..1] |
-| Desarrollo | Formulario (tipo sanitario) → ControladorSanitario.programar(), marcarRealizada() → ServicioSanitario.programar(), marcarRealizada() → IRepositorioSanitario.guardar(registro) |
+| Desarrollo | PaginaSanidad + Formulario (tipo sanitario) → ControladorSanitario.programar() · PaginaSanidad.marcarRealizada() → ControladorSanitario.marcarRealizada() → ServicioSanitario.programar(), marcarRealizada() → IRepositorioSanitario.buscarPorId(id), guardar(registro) |
 | DTO | EventoSanitarioRequest / EventoSanitarioResponse |
 | Excepciones | ReglaNegocioException (fecha anterior a hoy) |
 | Entidad-relación | registros_sanitarios (dos fechas y estado) |
 | Secuencia | — |
-| Mockup | Pendiente (Fase 5) |
+| Mockup | P09 Sanidad y actividades, P19 Sanidad: realizar y avisos (Fase 5) |
 | Implementación | Pendiente (Fases 8 a 10) |
 
 **Validación INVEST**
@@ -63,3 +63,13 @@ Característica: Actividades sanitarias
 
 **Supuestos / preguntas abiertas**
 - La actividad guarda dos fechas: la programada y la de realización (corrige la inconsistencia 5 de la Fase 1).
+
+**Implementación y pruebas (Fases 9 a 11)**
+
+Todos los criterios pasan (21/11/2026). `huNNN_cM` está en `CriteriosAceptacionTest` (HatoControl-backend); las pruebas del navegador, en `HatoControl-frontend/pruebas`.
+
+| Criterio | Prueba en la API | Prueba en el navegador |
+|---|---|---|
+| C1 · Programar una actividad | `hu008_c1_programar` | HU_008 C1 y C2 · Programar una actividad; no se acepta una fecha pasada |
+| C2 · Rechazar fecha pasada | `hu008_c2_rechazarFechaPasada` | HU_008 C1 y C2 · Programar una actividad; no se acepta una fecha pasada |
+| C3 · Marcar una actividad como realizada | `hu008_c3_marcarRealizada` | HU_008 C3 · Marcar como realizada conserva la fecha programada |

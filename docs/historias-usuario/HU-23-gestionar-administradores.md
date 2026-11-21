@@ -14,7 +14,7 @@
 | Dependencias | HU-20 |
 | Repositorios | HatoControl-frontend, HatoControl-backend, HatoControl-db |
 
-**Trazabilidad con el diseño (Fase 3)**
+**Trazabilidad con el diseño (Fases 3 y 5; vista de desarrollo v8)**
 
 | Vista | Elementos |
 |---|---|
@@ -27,7 +27,7 @@
 | Excepciones | ReglaNegocioException (correo registrado) · AccesoDenegadoException (administrador) |
 | Entidad-relación | usuarios (activo) |
 | Secuencia | — |
-| Mockup | Pendiente (Fase 5) |
+| Mockup | P14 Administradores, P23 Desactivar y restablecer (Fase 5) |
 | Implementación | Pendiente (Fases 8 a 10) |
 
 **Validación INVEST**
@@ -75,4 +75,17 @@ Característica: Gestión de administradores
 ```
 
 **Supuestos / preguntas abiertas**
+- Al desactivar a un administrador que tiene la sesión abierta, esa sesión deja de servir en su siguiente solicitud (observación O-01 de la Fase 11, `ServicioAutenticacion.validarCuentaActiva`).
 - Volver a activar una cuenta desactivada no está en los requerimientos.
+
+**Implementación y pruebas (Fases 9 a 11)**
+
+Todos los criterios pasan (21/11/2026). `huNNN_cM` está en `CriteriosAceptacionTest` (HatoControl-backend); las pruebas del navegador, en `HatoControl-frontend/pruebas`.
+
+| Criterio | Prueba en la API | Prueba en el navegador |
+|---|---|---|
+| C1 · Crear un administrador | `hu023_c1_crearAdministrador` | HU_023 C1 y C3 · Crear un administrador y verlo en la lista |
+| C2 · Correo ya registrado | `hu023_c2_correoYaRegistrado` | HU_023 C2 · Correo ya registrado |
+| C3 · Ver la lista de administradores | `hu023_c3_listaAdministradores` | HU_023 C1 y C3 · Crear un administrador y verlo en la lista |
+| C4 · Desactivar un administrador | `hu023_c4_desactivar` | HU_023 C4 · Desactivar pide confirmación |
+| C5 · Restablecer la contraseña de un administrador | `hu023_c5_restablecerContrasena` | HU_023 C5 · Restablecer la contraseña con su contador |

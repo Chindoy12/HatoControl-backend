@@ -14,7 +14,7 @@
 | Dependencias | HU-01 |
 | Repositorios | HatoControl-frontend, HatoControl-backend, HatoControl-db |
 
-**Trazabilidad con el diseño (Fase 3)**
+**Trazabilidad con el diseño (Fases 3 y 5; vista de desarrollo v8)**
 
 | Vista | Elementos |
 |---|---|
@@ -27,7 +27,7 @@
 | Excepciones | ReglaNegocioException (peso ≤ 0, fecha futura) · RecursoNoEncontradoException |
 | Entidad-relación | registros_peso |
 | Secuencia | — |
-| Mockup | Pendiente (Fase 5) |
+| Mockup | P10 Registrar peso y leche, P17 Página de un macho, P24 Reporte de peso y sin registros (Fase 5) |
 | Implementación | Pendiente (Fases 8 a 10) |
 
 **Validación INVEST**
@@ -75,3 +75,14 @@ Característica: Registro e historial de peso
 
 **Supuestos / preguntas abiertas**
 - En esta versión el peso se ingresa a mano y se expresa en kilogramos.
+
+**Implementación y pruebas (Fases 9 a 11)**
+
+Todos los criterios pasan (21/11/2026). `huNNN_cM` está en `CriteriosAceptacionTest` (HatoControl-backend); las pruebas del navegador, en `HatoControl-frontend/pruebas`.
+
+| Criterio | Prueba en la API | Prueba en el navegador |
+|---|---|---|
+| C1 · Registrar una medición válida | `hu010_c1_registrarMedicion` | HU_010 C1 · Registrar una medición muestra la confirmación y la variación |
+| C2 · Rechazar una medición inválida | `hu010_c2_rechazarMedicionInvalida` | HU_010 C2 · Peso cero, sin animal o con fecha futura: se señala qué corregir |
+| C3 · Consultar historial y variaciones | `hu010_c3_historialYVariaciones` | HU_010 C3 · El historial muestra la ganancia o pérdida respecto a la medición anterior |
+| C4 · Sin mediciones | `hu010_c4_sinMediciones` | — |

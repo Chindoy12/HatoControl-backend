@@ -14,7 +14,7 @@
 | Dependencias | Ninguna |
 | Repositorios | HatoControl-frontend, HatoControl-backend, HatoControl-db |
 
-**Trazabilidad con el diseño (Fase 3)**
+**Trazabilidad con el diseño (Fases 3 y 5; vista de desarrollo v8)**
 
 | Vista | Elementos |
 |---|---|
@@ -23,11 +23,11 @@
 | Funcional | Fincas, cuentas y acceso |
 | Lógica | Finca 1 — 1..* Usuario · enum Rol |
 | Desarrollo | Formulario (tipo finca) con mostrarContador() → ControladorCuentas.registrarFinca() → ServicioCuentas.registrarFinca() → IHashContrasenas.cifrar() · IRepositorioUsuarios.buscarPorCorreo(), guardar() · IRepositorioFincas.guardar() |
-| DTO | CuentaRequest / UsuarioResponse |
+| DTO | CuentaRequest / SesionResponse (la cuenta queda con la sesión abierta) |
 | Excepciones | ReglaNegocioException (correo registrado, contraseña de 10 a 12) |
 | Entidad-relación | fincas, usuarios (correo único) |
 | Secuencia | — |
-| Mockup | Pendiente (Fase 5) |
+| Mockup | P03 Registro de finca, P25 Avisos y estados vacíos (Fase 5) |
 | Implementación | Pendiente (Fases 8 a 10) |
 
 **Validación INVEST**
@@ -87,3 +87,15 @@ Característica: Registro de fincas
 **Supuestos / preguntas abiertas**
 - El sistema se diseña para al menos 100 fincas, pero no bloquea el registro de más (RNF24).
 - La contraseña nunca se guarda ni se devuelve en texto plano (RNF22).
+
+**Implementación y pruebas (Fases 9 a 11)**
+
+Todos los criterios pasan (21/11/2026). `huNNN_cM` está en `CriteriosAceptacionTest` (HatoControl-backend); las pruebas del navegador, en `HatoControl-frontend/pruebas`.
+
+| Criterio | Prueba en la API | Prueba en el navegador |
+|---|---|---|
+| C1 · Registrar una finca nueva | `hu020_c1_registrarFinca` | HU_020 C1 · Registrar una finca nueva deja al ganadero dentro |
+| C2 · Correo ya registrado | `hu020_c2_correoYaRegistrado` | HU_020 C2 · Correo ya registrado |
+| C3 · Datos incompletos o inválidos | `hu020_c3_datosInvalidos` | HU_020 C3 · Datos incompletos: se dice qué corregir |
+| C4 · Contador de caracteres de la contraseña | — | HU_020 C4 · El contador indica los caracteres que faltan o quedan |
+| C5 · No se pueden escribir más de 12 caracteres | — | HU_020 C5 · No se pueden escribir más de 12 caracteres |

@@ -14,7 +14,7 @@
 | Dependencias | HU-21 (iniciar sesión) |
 | Repositorios | HatoControl-frontend, HatoControl-backend, HatoControl-db |
 
-**Trazabilidad con el diseño (Fase 3)**
+**Trazabilidad con el diseño (Fases 3 y 5; vista de desarrollo v8)**
 
 | Vista | Elementos |
 |---|---|
@@ -27,7 +27,7 @@
 | Excepciones | ReglaNegocioException (arete duplicado, fecha futura, propósito no válido) |
 | Entidad-relación | animales (UK finca_id + codigo_arete) |
 | Secuencia | — |
-| Mockup | Pendiente (Fase 5) |
+| Mockup | P07 Registrar animal (Fase 5) |
 | Implementación | Pendiente (Fases 8 a 10) |
 
 **Validación INVEST**
@@ -92,3 +92,17 @@ Característica: Registro de animales
 **Supuestos / preguntas abiertas**
 - El nombre y la fecha de nacimiento son opcionales; son obligatorios el arete, el sexo y el propósito (RF02).
 - Las crías que nacen en la finca se registran desde el parto (HU-16).
+
+**Implementación y pruebas (Fases 9 a 11)**
+
+Todos los criterios pasan (21/11/2026). `huNNN_cM` está en `CriteriosAceptacionTest` (HatoControl-backend); las pruebas del navegador, en `HatoControl-frontend/pruebas`.
+
+| Criterio | Prueba en la API | Prueba en el navegador |
+|---|---|---|
+| C1 · Registrar animal con datos válidos | `hu001_c1_registrarConDatosValidos` | HU_001 C1 · Registrar con datos válidos muestra la confirmación |
+| C2 · Propósitos según el sexo | `hu001_c2_propositosSegunSexo` | HU_001 C2 · Solo se ofrecen los propósitos que corresponden al sexo |
+| C3 · Falta un dato obligatorio | `hu001_c3_faltaDatoObligatorio` | HU_001 C3 · Si falta un dato obligatorio se señala el campo |
+| C4 · Arete duplicado en la misma finca | `hu001_c4_areteDuplicado` | HU_001 C4 · El arete duplicado se informa en pantalla |
+| C5 · Mismo arete en otra finca | `hu001_c5_mismoAreteEnOtraFinca` | — |
+| C6 · Fecha de nacimiento futura | `hu001_c6_fechaNacimientoFutura` | HU_001 C6 · La fecha de nacimiento no puede ser posterior a hoy |
+| C7 · Propósito que no corresponde al sexo | `hu001_c7_propositoNoCorrespondeAlSexo` | — |

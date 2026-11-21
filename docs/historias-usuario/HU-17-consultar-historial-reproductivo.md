@@ -14,7 +14,7 @@
 | Dependencias | HU-16 |
 | Repositorios | HatoControl-frontend, HatoControl-backend, HatoControl-db |
 
-**Trazabilidad con el diseño (Fase 3)**
+**Trazabilidad con el diseño (Fases 3 y 5; vista de desarrollo v8)**
 
 | Vista | Elementos |
 |---|---|
@@ -27,7 +27,7 @@
 | Excepciones | — |
 | Entidad-relación | partos, animales.parto_id |
 | Secuencia | — |
-| Mockup | Pendiente (Fase 5) |
+| Mockup | P08 Página del animal, P25 Avisos y estados vacíos (Fase 5) |
 | Implementación | Pendiente (Fases 8 a 10) |
 
 **Validación INVEST**
@@ -57,3 +57,12 @@ Característica: Historial reproductivo
 
 **Supuestos / preguntas abiertas**
 - Solo las hembras tienen historial reproductivo; el padre de la cría no se registra (ningún requerimiento lo pide).
+
+**Implementación y pruebas (Fases 9 a 11)**
+
+Todos los criterios pasan (21/11/2026). `huNNN_cM` está en `CriteriosAceptacionTest` (HatoControl-backend); las pruebas del navegador, en `HatoControl-frontend/pruebas`.
+
+| Criterio | Prueba en la API | Prueba en el navegador |
+|---|---|---|
+| C1 · Consultar los partos de una vaca | `hu017_c1_partosDeUnaVaca` | HU_017 C1 · Historial reproductivo: partos con sus crías |
+| C2 · Vaca sin partos | `hu017_c2_vacaSinPartos` | HU_017 C2 · Vaca sin partos: «sin registros» |

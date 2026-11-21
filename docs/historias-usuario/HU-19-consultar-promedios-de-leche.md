@@ -14,7 +14,7 @@
 | Dependencias | HU-18 |
 | Repositorios | HatoControl-frontend, HatoControl-backend, HatoControl-db |
 
-**Trazabilidad con el diseño (Fase 3)**
+**Trazabilidad con el diseño (Fases 3 y 5; vista de desarrollo v8)**
 
 | Vista | Elementos |
 |---|---|
@@ -27,7 +27,7 @@
 | Excepciones | — |
 | Entidad-relación | registros_leche |
 | Secuencia | — |
-| Mockup | Pendiente (Fase 5) |
+| Mockup | P08 Página del animal, P21 Leche: validaciones y promedios (Fase 5) |
 | Implementación | Pendiente (Fases 8 a 10) |
 
 **Validación INVEST**
@@ -76,3 +76,14 @@ Característica: Promedios de producción de leche
 **Supuestos / preguntas abiertas**
 - La semana va de lunes a domingo y el mes es el mes calendario (propuesta).
 - El promedio usa solo los días con registro; un día sin registro no cuenta como cero (RN13).
+
+**Implementación y pruebas (Fases 9 a 11)**
+
+Todos los criterios pasan (21/11/2026). `huNNN_cM` está en `CriteriosAceptacionTest` (HatoControl-backend); las pruebas del navegador, en `HatoControl-frontend/pruebas`.
+
+| Criterio | Prueba en la API | Prueba en el navegador |
+|---|---|---|
+| C1 · Promedio de una semana | `hu019_c1_promedioSemana` | HU_019 C1 y C2 · La semana tiene siete días y el promedio solo cuenta los días con registro |
+| C2 · Semana con días sin registro | `hu019_c2_semanaConDiasSinRegistro` | HU_019 C1 y C2 · La semana tiene siete días y el promedio solo cuenta los días con registro |
+| C3 · Promedios por periodo | `hu019_c3_promediosPorPeriodo` | HU_019 C3 · Promedio por semana, mes y parto |
+| C4 · Periodo sin registros | `hu019_c4_periodoSinRegistros` | HU_019 C4 · Periodo sin registros: no se calcula promedio |

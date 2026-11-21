@@ -14,7 +14,7 @@
 | Dependencias | HU-01, HU-06, HU-10 |
 | Repositorios | HatoControl-frontend, HatoControl-backend, HatoControl-db |
 
-**Trazabilidad con el diseño (Fase 3)**
+**Trazabilidad con el diseño (Fases 3 y 5; vista de desarrollo v8)**
 
 | Vista | Elementos |
 |---|---|
@@ -27,7 +27,7 @@
 | Excepciones | RecursoNoEncontradoException (arete inexistente) |
 | Entidad-relación | animales, registros_sanitarios, registros_peso |
 | Secuencia | — |
-| Mockup | Pendiente (Fase 5) |
+| Mockup | P13 Reportes, P24 Reporte de peso y sin registros (Fase 5) |
 | Implementación | Pendiente (Fases 8 a 10) |
 
 **Validación INVEST**
@@ -64,3 +64,12 @@ Característica: Reportes de la finca
 **Supuestos / preguntas abiertas**
 - Los reportes se muestran en pantalla; la descarga en PDF no está en el alcance (decisión de la Fase 2).
 - Para los reportes sanitario y de peso se elige el animal por su código de arete (ReporteRequest.codigoArete).
+
+**Implementación y pruebas (Fases 9 a 11)**
+
+Todos los criterios pasan (21/11/2026). `huNNN_cM` está en `CriteriosAceptacionTest` (HatoControl-backend); las pruebas del navegador, en `HatoControl-frontend/pruebas`.
+
+| Criterio | Prueba en la API | Prueba en el navegador |
+|---|---|---|
+| C1 · Generar un reporte | `hu014_c1_generarReporte` | HU_014 C1 · Reportes de animales, sanitario y peso en pantalla |
+| C2 · Reporte sin datos | `hu014_c2_reporteSinDatos` | HU_014 C2 · Reporte sin datos: «sin registros» |

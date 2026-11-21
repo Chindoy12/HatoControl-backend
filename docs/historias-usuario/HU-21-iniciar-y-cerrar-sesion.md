@@ -14,7 +14,7 @@
 | Dependencias | HU-20 |
 | Repositorios | HatoControl-frontend, HatoControl-backend, HatoControl-db |
 
-**Trazabilidad con el diseño (Fase 3)**
+**Trazabilidad con el diseño (Fases 3 y 5; vista de desarrollo v8)**
 
 | Vista | Elementos |
 |---|---|
@@ -22,12 +22,12 @@
 | Contexto (flujo) | Registro de finca y credenciales · Credenciales (administrador) |
 | Funcional | Fincas, cuentas y acceso (ofrece API REST e ISesion) |
 | Lógica | Usuario.esGanadero(), activo |
-| Desarrollo | PaginaIngreso.ingresar() → FiltroAutenticacion (ruta pública) → ControladorAutenticacion.ingresar(), salir() → ServicioAutenticacion.iniciarSesion(), cerrarSesion() → IRepositorioUsuarios.buscarPorCorreo() · IHashContrasenas.verificar() |
+| Desarrollo | PaginaIngreso.ingresar() · Encabezado.salir() → FiltroAutenticacion (ruta pública) → ControladorAutenticacion.ingresar(), sesionActual(), salir() → ServicioAutenticacion.iniciarSesion(), cerrarSesion() → IRepositorioUsuarios.buscarPorCorreo() · IHashContrasenas.verificar() |
 | DTO | IngresoRequest / SesionResponse |
 | Excepciones | ReglaNegocioException (datos incorrectos) · AccesoDenegadoException (cuenta desactivada) |
 | Entidad-relación | usuarios |
 | Secuencia | 08 Iniciar sesión |
-| Mockup | Pendiente (Fase 5) |
+| Mockup | P01 Inicio, P02 Ingreso, P25 Avisos y estados vacíos (Fase 5) |
 | Implementación | Pendiente (Fases 8 a 10) |
 
 **Validación INVEST**
@@ -69,3 +69,14 @@ Característica: Acceso al sistema
 
 **Supuestos / preguntas abiertas**
 - Ninguno.
+
+**Implementación y pruebas (Fases 9 a 11)**
+
+Todos los criterios pasan (21/11/2026). `huNNN_cM` está en `CriteriosAceptacionTest` (HatoControl-backend); las pruebas del navegador, en `HatoControl-frontend/pruebas`.
+
+| Criterio | Prueba en la API | Prueba en el navegador |
+|---|---|---|
+| C1 · Iniciar sesión con datos correctos | `hu021_c1_ingresoCorrecto` | HU_021 C1 · Con datos correctos entra a las funciones de su tipo |
+| C2 · Datos incorrectos | `hu021_c2_datosIncorrectos` | HU_021 C2 · Datos incorrectos: no dice cuál falló |
+| C3 · Cuenta desactivada | `hu021_c3_cuentaDesactivada` | HU_021 C3 · Cuenta desactivada |
+| C4 · Cerrar sesión | `hu021_c4_cerrarSesion` | HU_021 C4 · Al cerrar sesión vuelve al ingreso y no muestra información |

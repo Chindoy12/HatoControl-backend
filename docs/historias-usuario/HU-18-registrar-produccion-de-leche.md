@@ -14,7 +14,7 @@
 | Dependencias | HU-01, HU-16 |
 | Repositorios | HatoControl-frontend, HatoControl-backend, HatoControl-db |
 
-**Trazabilidad con el diseño (Fase 3)**
+**Trazabilidad con el diseño (Fases 3 y 5; vista de desarrollo v8)**
 
 | Vista | Elementos |
 |---|---|
@@ -27,7 +27,7 @@
 | Excepciones | ReglaNegocioException (RF47) |
 | Entidad-relación | registros_leche (UK animal_id + fecha, parto_id) |
 | Secuencia | 10 Registrar leche |
-| Mockup | Pendiente (Fase 5) |
+| Mockup | P10 Registrar peso y leche, P21 Leche: validaciones y promedios (Fase 5) |
 | Implementación | Pendiente (Fases 8 a 10) |
 
 **Validación INVEST**
@@ -72,3 +72,13 @@ Característica: Registro diario de leche
 **Supuestos / preguntas abiertas**
 - La unidad es el litro.
 - El usuario puede elegir otro parto de la vaca (LecheRequest.fechaParto); si no lo elige, se usa el más reciente (RF46).
+
+**Implementación y pruebas (Fases 9 a 11)**
+
+Todos los criterios pasan (21/11/2026). `huNNN_cM` está en `CriteriosAceptacionTest` (HatoControl-backend); las pruebas del navegador, en `HatoControl-frontend/pruebas`.
+
+| Criterio | Prueba en la API | Prueba en el navegador |
+|---|---|---|
+| C1 · Registrar la leche de un día | `hu018_c1_registrarLeche` | HU_018 C1 · Registrar la leche del día en el parto más reciente |
+| C2 · Rechazar un registro inválido | `hu018_c2_rechazarRegistroInvalido` | HU_018 C2 · El mismo día no se registra dos veces y no se aceptan litros en cero |
+| C3 · Hembra que no es de leche o sin partos | `hu018_c3_hembraSinLecheOSinPartos` | HU_018 C3 · Una hembra de engorde no aparece entre las vacas de leche; HU_018 C3 · Vaca sin partos: se explica el motivo y no se puede guardar |

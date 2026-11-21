@@ -14,7 +14,7 @@
 | Dependencias | HU-01 |
 | Repositorios | HatoControl-frontend, HatoControl-backend, HatoControl-db |
 
-**Trazabilidad con el diseño (Fase 3)**
+**Trazabilidad con el diseño (Fases 3 y 5; vista de desarrollo v8)**
 
 | Vista | Elementos |
 |---|---|
@@ -22,12 +22,12 @@
 | Contexto (flujo) | Página de cada animal e historiales |
 | Funcional | Gestión de animales |
 | Lógica | Animal |
-| Desarrollo | PaginaAnimales.listar(), filtrar() → ControladorAnimales.listar() → ServicioAnimales.listar(filtro) → IRepositorioAnimales.listar(fincaId, filtro) |
+| Desarrollo | PaginaAnimales.listar(), filtrar() → ControladorAnimales.listar() → ServicioAnimales.listar(filtro, sexo, proposito) → IRepositorioAnimales.listar(fincaId, filtro) |
 | DTO | AnimalResponse |
 | Excepciones | — |
 | Entidad-relación | animales |
 | Secuencia | — |
-| Mockup | Pendiente (Fase 5) |
+| Mockup | P06 Listado de animales (Fase 5) |
 | Implementación | Pendiente (Fases 8 a 10) |
 
 **Validación INVEST**
@@ -74,3 +74,14 @@ Característica: Consulta del listado de animales
 
 **Supuestos / preguntas abiertas**
 - La raza no se registra ni se filtra (decisión de la Fase 2).
+
+**Implementación y pruebas (Fases 9 a 11)**
+
+Todos los criterios pasan (21/11/2026). `huNNN_cM` está en `CriteriosAceptacionTest` (HatoControl-backend); las pruebas del navegador, en `HatoControl-frontend/pruebas`.
+
+| Criterio | Prueba en la API | Prueba en el navegador |
+|---|---|---|
+| C1 · Consultar animales registrados | `hu002_c1_consultarListado` | HU_002 C1 · El listado muestra arete, nombre, sexo y propósito |
+| C2 · Buscar por arete | `hu002_c2_buscarPorArete` | HU_002 C2 · Buscar por arete |
+| C3 · Filtrar el listado | `hu002_c3_filtrar` | HU_002 C3 · Filtrar por sexo y por propósito |
+| C4 · Sin coincidencias | `hu002_c4_sinCoincidencias` | HU_002 C4 · Sin coincidencias se muestra «sin registros» |

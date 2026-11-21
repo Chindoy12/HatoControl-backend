@@ -14,7 +14,7 @@
 | Dependencias | HU-06 |
 | Repositorios | HatoControl-frontend, HatoControl-backend, HatoControl-db |
 
-**Trazabilidad con el diseño (Fase 3)**
+**Trazabilidad con el diseño (Fases 3 y 5; vista de desarrollo v8)**
 
 | Vista | Elementos |
 |---|---|
@@ -27,7 +27,7 @@
 | Excepciones | — |
 | Entidad-relación | registros_sanitarios |
 | Secuencia | — |
-| Mockup | Pendiente (Fase 5) |
+| Mockup | P08 Página del animal, P17 Página de un macho (Fase 5) |
 | Implementación | Pendiente (Fases 8 a 10) |
 
 **Validación INVEST**
@@ -72,3 +72,14 @@ Característica: Historial sanitario
 
 **Supuestos / preguntas abiertas**
 - Una actividad programada aparece en el historial desde que se marca como realizada (decisión de la Fase 2).
+
+**Implementación y pruebas (Fases 9 a 11)**
+
+Todos los criterios pasan (21/11/2026). `huNNN_cM` está en `CriteriosAceptacionTest` (HatoControl-backend); las pruebas del navegador, en `HatoControl-frontend/pruebas`.
+
+| Criterio | Prueba en la API | Prueba en el navegador |
+|---|---|---|
+| C1 · Consultar el historial completo | `hu007_c1_historialOrdenado` | HU_007 C1 y C2 · Historial ordenado y filtrado por tipo |
+| C2 · Filtrar por tipo de evento | `hu007_c2_filtrarPorTipo` | HU_007 C1 y C2 · Historial ordenado y filtrado por tipo |
+| C3 · Las actividades programadas no aparecen en el historial | `hu007_c3_programadasNoAparecen` | HU_007 C3 y C4 · Las programadas van aparte y un filtro sin datos dice «sin registros» |
+| C4 · Historial sin registros | `hu007_c4_historialSinRegistros` | HU_007 C3 y C4 · Las programadas van aparte y un filtro sin datos dice «sin registros» |

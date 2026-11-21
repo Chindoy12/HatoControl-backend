@@ -14,7 +14,7 @@
 | Dependencias | HU-01 |
 | Repositorios | HatoControl-frontend, HatoControl-backend, HatoControl-db |
 
-**Trazabilidad con el diseño (Fase 3)**
+**Trazabilidad con el diseño (Fases 3 y 5; vista de desarrollo v8)**
 
 | Vista | Elementos |
 |---|---|
@@ -27,7 +27,7 @@
 | Excepciones | RecursoNoEncontradoException (animal inexistente) |
 | Entidad-relación | animales |
 | Secuencia | — |
-| Mockup | Pendiente (Fase 5) |
+| Mockup | P08 Página del animal, P25 Avisos y estados vacíos (Fase 5) |
 | Implementación | Pendiente (Fases 8 a 10) |
 
 **Validación INVEST**
@@ -62,3 +62,13 @@ Característica: Ficha del animal
 
 **Supuestos / preguntas abiertas**
 - La edad se calcula con la fecha actual como referencia.
+
+**Implementación y pruebas (Fases 9 a 11)**
+
+Todos los criterios pasan (21/11/2026). `huNNN_cM` está en `CriteriosAceptacionTest` (HatoControl-backend); las pruebas del navegador, en `HatoControl-frontend/pruebas`.
+
+| Criterio | Prueba en la API | Prueba en el navegador |
+|---|---|---|
+| C1 · Consultar ficha con fecha de nacimiento | `hu003_c1_fichaConEdad` | — |
+| C2 · Animal sin fecha de nacimiento | `hu003_c2_sinFechaNacimiento` | HU_003 C2 · Sin fecha de nacimiento, la edad dice «sin registros» |
+| C3 · Animal inexistente | `hu003_c3_animalInexistente` | HU_003 C3 · Animal inexistente |
