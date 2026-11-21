@@ -52,7 +52,17 @@ Todas las rutas empiezan por `/api`. Sin sesión responden 401; las del ganadero
 
 ## Pruebas
 
-`CriteriosAceptacionTest` usa la API como la aplicación web (cookies de sesión y token CSRF) contra PostgreSQL con los datos de prueba de HatoControl-db, y comprueba los criterios de aceptación de cada historia de usuario. GitHub Actions las ejecuta en cada cambio.
+Las pruebas usan la API como la aplicación web (cookies de sesión y token CSRF) contra PostgreSQL con los datos de prueba de HatoControl-db. GitHub Actions las ejecuta en cada cambio y lista el resultado de cada una.
+
+| Clase | Pruebas | Qué comprueba |
+|---|---|---|
+| `CriteriosAceptacionTest` | 80 | Un método por criterio de aceptación que se puede comprobar en la API: `huNNN_cM` = historia NNN, criterio M. |
+| `SeguridadTest` | 10 | RNF19 (autenticación y longitud de la contraseña), RNF20 (control de acceso y CSRF), RNF22 (hash BCrypt, cookie HttpOnly, nada sensible en respuestas ni registros) y RNF23 (enlace guardado como hash, de un solo uso, vence a los 30 minutos). Usa un correo de prueba que guarda el enlace en lugar de enviarlo. |
+| `CapacidadTest` | 1 | RNF24 y RNF10: crea 100 fincas con 40 animales y un año de historial cada una, y comprueba que cada operación responde en menos de 3 segundos. |
+| `HatoControlAplicacionTest` | 1 | La aplicación arranca y el esquema de la base coincide con las entidades. |
+| `HashContrasenasSpringTest` | 1 | El cifrado de contraseñas con BCrypt. |
+
+Los criterios que solo se ven en pantalla se prueban en el navegador, en `HatoControl-frontend/pruebas`.
 
 ## Ejecutar en local
 
