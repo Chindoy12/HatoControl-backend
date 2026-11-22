@@ -1,5 +1,7 @@
 # Diagramas de Visual Paradigm frente al código (21/11/2026)
 
+La lista completa de la vista de desarrollo, clase por clase, está en el documento «Vista de desarrollo v9 · guía para Visual Paradigm».
+
 Comparé los 5 diagramas de `Diagramas diseño/DiagramasHato` con el código de los tres repositorios, la vista de desarrollo v9, la vista lógica v3 y las historias de usuario. Así quedó cada uno:
 
 | Diagrama en Visual Paradigm | Estado | Qué hacer |
@@ -35,7 +37,8 @@ Comparé los 5 diagramas de `Diagramas diseño/DiagramasHato` con el código de 
   - `PaginaPanel`: `+mostrarAccesos(rol)`, `+mostrarPendientes()`.
   - `PaginaSanidad`: `+mostrarProximas(dias)`, `+mostrarPendientes()`, `+marcarRealizada()`.
   - `Encabezado`: `+mostrarMenu(rol)`, `+salir()`.
-  - `«apoyo visual» piezas`, sin métodos (Icono, Marca, Mensaje, SinRegistros, Dialogo y formato de fechas).
+  - `«apoyo visual» piezas`, con una operación por pieza: `+Icono(nombre)`, `+Marca()`, `+Figuras(alto)`, `+Mensaje(tipo)`, `+SinRegistros()`, `+PropositoTag(p)`, `+Dialogo(titulo, acciones)`, `+fecha(iso) : String`, `+hoyIso() : String`, `+numero(valor) : String`, `+propositosDe(sexo)`.
+  - `«exception» ErrorApi`: `+estado : number`, `+campos : Errores`, `+ErrorApi(estado, mensaje, campos)`; dependencia «lanza» desde `ClienteApi`.
 - **`PaginaIngreso`:** cambia `+mostrarContador()` por `+recuperarContrasena()`.
 - **`Formulario`:** queda solo con `-tipo : String` y `+mostrar(tipo)`. Conserva la nota de tipos (animal, sanitario, peso, parto, leche, finca, administrador o contraseña).
 - **Paquete nuevo `formularios`**, dentro de la aplicación web:
@@ -64,6 +67,8 @@ Comparé los 5 diagramas de `Diagramas diseño/DiagramasHato` con el código de 
   - DTO nuevo `LecheResponse`: `-fecha : Date`, `-litros : double`.
 
 **Capa de negocio**
+
+- `AdaptadorCorreo` lleva `+enviarEnlace(correo, enlace)` y `HashContrasenasSpring` lleva `+cifrar(contrasena)` y `+verificar(contrasena, hash)` (sin texto libre dentro de la clase).
 
 - **`ServicioAutenticacion`:** agrega `+restablecerConEnlace(token, contrasena)` y `+validarCuentaActiva(usuarioId)`.
 - **`ServicioAnimales`:** agrega `+listar(filtro, sexo, proposito)`.
