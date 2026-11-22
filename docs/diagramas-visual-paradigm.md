@@ -40,7 +40,7 @@ Comparé los 5 diagramas de `Diagramas diseño/DiagramasHato` con el código de 
 - **`Formulario`:** queda solo con `-tipo : String` y `+mostrar(tipo)`. Conserva la nota de tipos (animal, sanitario, peso, parto, leche, finca, administrador o contraseña).
 - **Paquete nuevo `formularios`**, dentro de la aplicación web:
   - `«hook» useFormulario`: `+validarCampos()`, `+mostrarErrores(mensajes)`, `+enviar()`, `+cambiar(campo, valor)`.
-  - `«apoyo visual» campos`: CampoTexto, Clave, SelectorAnimal, Sexos, Resultado, Botones y Contador, que hace `mostrarContador()`.
+  - `«apoyo visual» campos`, con una operación por pieza: `+CampoTexto(f, campo, etiqueta)`, `+Clave(f, campo, etiqueta)`, `+SelectorAnimal(f, campo, lista)`, `+Sexos(valor, alElegir)`, `+Resultado(f)`, `+Botones(f, texto)`, `+BotonGuardar(f, texto)`, `+mostrarContador(largo)` y `-Ayuda(error, ayuda)` (privada). En Visual Paradigm la clase solo acepta atributos y operaciones, no texto libre.
   - `validaciones`: `+exigir(campo, mensaje)`, `+exigirLongitud()`.
   - `«hook» useAnimales`: `+useAnimales()`.
   - 8 componentes, cada uno con `+guardar(valores)` y `-validar(valores)`: `FormularioAnimal`, `FormularioSanitario`, `FormularioPeso`, `FormularioParto`, `FormularioLeche`, `FormularioFinca`, `FormularioAdministrador` y `FormularioContrasena`.
