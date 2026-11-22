@@ -43,9 +43,10 @@ Comparé los 5 diagramas de `Diagramas diseño/DiagramasHato` con el código de 
   - `«apoyo visual» campos`, con una operación por pieza: `+CampoTexto(f, campo, etiqueta)`, `+Clave(f, campo, etiqueta)`, `+SelectorAnimal(f, campo, lista)`, `+Sexos(valor, alElegir)`, `+Resultado(f)`, `+Botones(f, texto)`, `+BotonGuardar(f, texto)`, `+mostrarContador(largo)` y `-Ayuda(error, ayuda)` (privada). En Visual Paradigm la clase solo acepta atributos y operaciones, no texto libre.
   - `validaciones`: `+exigir(campo, mensaje)`, `+exigirLongitud()`.
   - `«hook» useAnimales`: `+useAnimales()`.
-  - 8 componentes, cada uno con `+guardar(valores)` y `-validar(valores)`: `FormularioAnimal`, `FormularioSanitario`, `FormularioPeso`, `FormularioParto`, `FormularioLeche`, `FormularioFinca`, `FormularioAdministrador` y `FormularioContrasena`.
+  - `«interface» ReglasFormulario`: atributos `+iniciales : Valores` y `+sinCancelar : boolean [0..1]`; operaciones `+validar(valores) : Errores` y `+guardar(valores)`. Es el contrato que cumple cada formulario (está en `useFormulario.ts`).
+  - 8 clases **solo con el nombre**, sin repetir operaciones: `FormularioAnimal`, `FormularioSanitario`, `FormularioPeso`, `FormularioParto`, `FormularioLeche`, `FormularioFinca`, `FormularioAdministrador` y `FormularioContrasena`. Las 8 **realizan** `ReglasFormulario` (línea punteada con triángulo vacío; pueden juntarse en una sola flecha).
   - Dependencia `Formulario` → paquete `formularios`, con la etiqueta «mostrar(tipo) elige uno de los 8».
-  - Dependencia «use» de los 8 formularios hacia `useFormulario`.
+  - Dependencia «use» de `useFormulario` hacia `ReglasFormulario`: el hook recibe las reglas de cada formulario.
 
 **Capa de presentación**
 
