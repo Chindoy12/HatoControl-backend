@@ -19,11 +19,6 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.core.JdbcTemplate;
 
-/**
- * Prueba la API completa, como la usa la aplicación web, contra la base con los datos de prueba de HatoControl-db.
- * Cada método se llama huNNN_cM: historia de usuario NNN, criterio de aceptación M (en el orden de la HU).
- * Los criterios que solo se ven en pantalla se prueban en el navegador (HatoControl-frontend/pruebas).
- */
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
         properties = "server.servlet.session.cookie.secure=false")
 @Import(SeguridadTest.CorreoDePrueba.class)
@@ -100,14 +95,12 @@ class CriteriosAceptacionTest {
         return "{\"correo\":\"" + correo + "\",\"contrasena\":\"" + contrasena + "\"}";
     }
 
-    /** Registra una finca nueva sin datos y devuelve el cliente con la sesión de su ganadero. */
     private ClientePrueba fincaNueva(String nombreFinca, String correo) {
         ClientePrueba c = new ClientePrueba(puerto);
         esperar(201, c.post("/api/cuentas/fincas", cuenta(nombreFinca, "Prueba", correo, "Prueba2026")));
         return c;
     }
 
-    /** Hembra de leche con un parto hace {@code diasParto} días, lista para registrar leche. */
     private void vacaConParto(ClientePrueba c, String arete, int diasParto) {
         esperar(201, c.post("/api/animales", animal(arete, "HEMBRA", "2021-01-01", "LECHE")));
         esperar(201, c.post("/api/partos", parto(arete, HOY.minusDays(diasParto))));

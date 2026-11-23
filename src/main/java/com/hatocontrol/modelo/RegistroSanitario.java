@@ -80,25 +80,21 @@ public class RegistroSanitario extends RegistroDeAnimal {
 
     // ---- Comportamiento de la vista lógica ----
 
-    /** Cambia a «realizada» sin perder la fecha programada (HU_008). */
     public void marcarRealizada(LocalDate fecha) {
         this.fechaRealizacion = fecha;
         this.estado = EstadoActividad.REALIZADA;
     }
 
-    /** Programada con fecha anterior a hoy y aún no realizada (HU_009). */
     public boolean estaPendiente(LocalDate hoy) {
         return estado == EstadoActividad.PROGRAMADA && fechaProgramada.isBefore(hoy);
     }
 
-    /** Programada entre hoy y hoy + días (HU_009). */
     public boolean esProxima(LocalDate hoy, int dias) {
         return estado == EstadoActividad.PROGRAMADA
                 && !fechaProgramada.isBefore(hoy)
                 && !fechaProgramada.isAfter(hoy.plusDays(dias));
     }
 
-    /** Realizada: la fecha en que se hizo; programada: la fecha prevista. */
     @Override
     public LocalDate fechaDelRegistro() {
         return fechaRealizacion != null ? fechaRealizacion : fechaProgramada;

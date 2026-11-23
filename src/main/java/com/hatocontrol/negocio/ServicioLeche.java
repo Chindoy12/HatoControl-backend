@@ -20,7 +20,6 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-/** Leche: HU_018 y HU_019. */
 @Service
 @Transactional
 public class ServicioLeche {
@@ -33,7 +32,6 @@ public class ServicioLeche {
     private final Map<String, PeriodoPromedio> periodos;
     private final Clock reloj;
 
-    /** Spring entrega todas las subclases de PeriodoPromedio; un periodo nuevo solo necesita su subclase. */
     public ServicioLeche(IRepositorioLeche leche, IRepositorioAnimales animales, IRepositorioPartos partos,
             List<PeriodoPromedio> periodos, Clock reloj) {
         this.leche = leche;
@@ -66,7 +64,6 @@ public class ServicioLeche {
         return vaca;
     }
 
-    /** El parto elegido o, si no se eligió, el más reciente. */
     private Parto elegirParto(Animal vaca, LocalDate fechaParto) {
         List<Parto> partosVaca = partos.listarPorMadre(vaca.getId());
         String nombre = ServicioAnimales.nombreCorto(vaca);
@@ -80,7 +77,6 @@ public class ServicioLeche {
                 .orElseThrow(() -> new ReglaNegocioException("Ese parto no está registrado para " + nombre + "."));
     }
 
-    /** No posterior a hoy, no anterior al parto y un solo registro por día (RF47). */
     private void validarFecha(RegistroLeche registro, Parto parto) {
         LocalDate fecha = registro.getFecha();
         if (registro.esPosteriorA(LocalDate.now(reloj))) {
@@ -95,10 +91,6 @@ public class ServicioLeche {
         }
     }
 
-    /**
-     * Promedio del periodo (SEMANA, MES o PARTO) que contiene la fecha; sin fecha, el periodo actual.
-     * Solo cuenta los días con registro (HU_019). Sin registros: diasConRegistro = 0 y no hay promedio.
-     */
     @Transactional(readOnly = true)
     public PromedioLecheResponse promedio(Long fincaId, String codigoArete, String periodo, LocalDate fecha) {
         PeriodoPromedio calculo = periodos.get(periodo == null ? "" : periodo.toUpperCase());

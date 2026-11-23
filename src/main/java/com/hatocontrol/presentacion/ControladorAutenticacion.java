@@ -25,7 +25,6 @@ public class ControladorAutenticacion {
         this.servicioAutenticacion = servicioAutenticacion;
     }
 
-    /** Quién está dentro; sin sesión, FiltroAutenticacion responde 401. */
     @GetMapping
     public SesionResponse sesionActual(HttpServletRequest solicitud) {
         HttpSession sesion = solicitud.getSession(false);
@@ -48,21 +47,18 @@ public class ControladorAutenticacion {
         }
     }
 
-    /** Cuerpo: {"correo": "..."}. Responde lo mismo exista o no la cuenta (HU_024). */
     @PostMapping("/recuperacion")
     public Map<String, String> solicitarRecuperacion(@RequestBody Map<String, String> datos) {
         servicioAutenticacion.recuperarContrasena(datos.get("correo"));
         return Map.of("mensaje", MENSAJE_RECUPERACION);
     }
 
-    /** Cuerpo: {"contrasena": "..."}. El token viaja en la dirección; la contraseña nunca (RNF22). */
     @PostMapping("/recuperacion/{token}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void restablecerConEnlace(@PathVariable String token, @RequestBody Map<String, String> datos) {
         servicioAutenticacion.restablecerConEnlace(token, datos.get("contrasena"));
     }
 
-    /** Guarda en la sesión del servidor quién entró; cambia el identificador de sesión para evitar su robo. */
     static SesionResponse abrirSesion(Usuario usuario, HttpServletRequest peticion) {
         HttpSession anterior = peticion.getSession(false);
         if (anterior != null) {

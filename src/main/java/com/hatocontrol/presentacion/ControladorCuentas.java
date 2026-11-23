@@ -24,7 +24,6 @@ public class ControladorCuentas {
         this.filtro = filtro;
     }
 
-    /** Crea la finca y deja al ganadero dentro del sistema (HU_020). */
     @PostMapping("/fincas")
     @ResponseStatus(HttpStatus.CREATED)
     public SesionResponse registrarFinca(@Valid @RequestBody CuentaRequest solicitud, HttpServletRequest peticion) {
@@ -42,7 +41,6 @@ public class ControladorCuentas {
         return servicioCuentas.listarAdministradores(filtro.obtenerFinca(peticion));
     }
 
-    /** Cuerpo: {"correo": "..."}. */
     @PostMapping("/administradores/desactivacion")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void desactivar(@RequestBody Map<String, String> datos, HttpServletRequest peticion) {

@@ -15,14 +15,9 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
-/**
- * Convierte los errores en mensajes claros (RNF03): {"mensaje": "...", "campos": {"campo": "qué corregir"}}.
- * Ninguna respuesta de error incluye contraseñas ni detalles internos.
- */
 @RestControllerAdvice
 public class ManejadorExcepciones {
 
-    /** Cualquier error del sistema llega como HatoControlException; según su subclase cambia el código HTTP. */
     @ExceptionHandler(HatoControlException.class)
     public ResponseEntity<Map<String, Object>> manejarError(HatoControlException e) {
         int estado = switch (e) {
@@ -33,7 +28,6 @@ public class ManejadorExcepciones {
         return respuesta(estado, e.getMessage(), Map.of());
     }
 
-    /** Campos que faltan o vienen con un formato que no se puede leer. */
     @ExceptionHandler({MethodArgumentNotValidException.class, HttpMessageNotReadableException.class,
             MethodArgumentTypeMismatchException.class, MissingServletRequestParameterException.class})
     public ResponseEntity<Map<String, Object>> manejarValidacion(Exception e) {

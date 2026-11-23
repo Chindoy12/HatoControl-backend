@@ -6,7 +6,6 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import org.springframework.stereotype.Repository;
 
-/** Implementa IRepositorioPesos con JPA sobre PostgreSQL. */
 @Repository
 public class RepositorioPesosBD implements IRepositorioPesos {
 
@@ -22,7 +21,6 @@ public class RepositorioPesosBD implements IRepositorioPesos {
         }
     }
 
-    /** Mediciones del animal de la más antigua a la más reciente. */
     @Override
     public List<RegistroPeso> historial(Long animalId) {
         return em.createQuery("select r from RegistroPeso r where r.animal.id = :animal order by r.fechaMedicion, r.id", RegistroPeso.class)

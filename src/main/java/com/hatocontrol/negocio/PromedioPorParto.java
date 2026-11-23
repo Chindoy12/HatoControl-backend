@@ -7,7 +7,6 @@ import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Component;
 
-/** Lactancia del parto más reciente hasta la fecha: desde el parto hasta el día anterior al parto siguiente. */
 @Component
 public class PromedioPorParto extends PeriodoPromedio {
 

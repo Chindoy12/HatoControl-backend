@@ -20,12 +20,10 @@ public class Parto {
     @Column(name = "fecha", nullable = false)
     private LocalDate fecha;
 
-    /** Crías nacidas en este parto (relación «nacen en»). */
     @OneToMany(mappedBy = "parto")
     @OrderBy("codigoArete")
     private List<Animal> crias = new ArrayList<>();
 
-    /** Leche registrada en la lactancia de este parto. */
     @OneToMany(mappedBy = "parto")
     private List<RegistroLeche> registrosLeche = new ArrayList<>();
 
@@ -62,7 +60,6 @@ public class Parto {
 
     // ---- Comportamiento de la vista lógica ----
 
-    /** Litros totales de la lactancia divididos entre los días con registro; 0 si no hay registros. */
     public double promedioDiarioLeche() {
         return registrosLeche.stream().mapToDouble(RegistroLeche::getLitros).average().orElse(0);
     }

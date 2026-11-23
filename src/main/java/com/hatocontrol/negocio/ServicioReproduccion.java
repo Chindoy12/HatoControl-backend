@@ -20,7 +20,6 @@ import java.util.Set;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-/** Partos y crías: HU_016 y HU_017. */
 @Service
 @Transactional
 public class ServicioReproduccion {
@@ -37,7 +36,6 @@ public class ServicioReproduccion {
         this.reloj = reloj;
     }
 
-    /** Guarda el parto y sus crías juntos: si algo falla, no se guarda nada. */
     public PartoResponse registrarParto(Long fincaId, PartoRequest solicitud) {
         Animal madre = buscarMadre(fincaId, solicitud);
         List<AnimalRequest> crias = solicitud.crias() == null ? List.of() : solicitud.crias();
@@ -62,7 +60,6 @@ public class ServicioReproduccion {
         return madre;
     }
 
-    /** Arete único (también entre las crías del mismo parto) y propósito según el sexo (RN09). */
     private void validarCrias(Long fincaId, List<AnimalRequest> crias, LocalDate fechaParto) {
         Set<String> aretes = new HashSet<>();
         for (AnimalRequest cria : crias) {
@@ -74,7 +71,6 @@ public class ServicioReproduccion {
         }
     }
 
-    /** La cría nace en la fecha del parto y queda asociada a su madre. */
     private Animal guardarCria(AnimalRequest cria, Parto parto) {
         Animal nueva = new Animal();
         nueva.setFinca(parto.getMadre().getFinca());
@@ -88,7 +84,6 @@ public class ServicioReproduccion {
         return nueva;
     }
 
-    /** Partos de la hembra del más antiguo al más reciente, con sus crías; lista vacía = «sin registros». */
     @Transactional(readOnly = true)
     public List<PartoResponse> historialReproductivo(Long fincaId, String codigoArete) {
         String arete = ServicioAnimales.normalizarArete(codigoArete);

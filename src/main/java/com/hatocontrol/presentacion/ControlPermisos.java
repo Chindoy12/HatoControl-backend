@@ -5,7 +5,6 @@ import com.hatocontrol.negocio.excepciones.AccesoDenegadoException;
 import java.util.Set;
 import org.springframework.stereotype.Component;
 
-/** Dashboard y administradores son solo del ganadero; lo demás lo usan ganadero y administrador (RNF20, HU_022). */
 @Component
 public class ControlPermisos {
 

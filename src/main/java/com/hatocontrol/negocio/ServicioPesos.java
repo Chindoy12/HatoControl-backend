@@ -15,7 +15,6 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-/** Peso: HU_010 y HU_011. */
 @Service
 @Transactional
 public class ServicioPesos {
@@ -50,7 +49,6 @@ public class ServicioPesos {
                 .orElseThrow();
     }
 
-    /** Pesos de la medición más antigua a la más reciente, con la ganancia o pérdida frente a la anterior. */
     @Transactional(readOnly = true)
     public List<PesoResponse> historialConDiferencias(Long fincaId, String codigoArete) {
         String arete = ServicioAnimales.normalizarArete(codigoArete);

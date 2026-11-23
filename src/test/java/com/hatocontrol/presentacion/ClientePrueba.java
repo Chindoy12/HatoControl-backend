@@ -9,7 +9,6 @@ import java.net.http.HttpHeaders;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
-/** Navegador mínimo para las pruebas: guarda las cookies de sesión y envía el token CSRF como la aplicación web. */
 class ClientePrueba {
 
     record Respuesta(int estado, String cuerpo, HttpHeaders encabezados) {

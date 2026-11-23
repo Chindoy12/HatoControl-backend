@@ -34,11 +34,6 @@ import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.core.JdbcTemplate;
 
-/**
- * Requisitos de seguridad: RNF19 (autenticación), RNF20 (control de acceso en el backend),
- * RNF22 (protección de la contraseña) y RNF23 (recuperación segura).
- * HTTPS, la cookie «Secure» y la base de datos privada (RNF21) se comprueban con la aplicación publicada (Fase 12).
- */
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
         properties = "server.servlet.session.cookie.secure=false")
 @Import(SeguridadTest.CorreoDePrueba.class)
@@ -47,7 +42,6 @@ class SeguridadTest {
 
     static final LocalDate HOY = LocalDate.now(ZoneId.of("America/Bogota"));
 
-    /** Reemplaza el envío real del correo en las pruebas: guarda cada enlace para poder abrirlo. */
     @TestConfiguration
     static class CorreoDePrueba {
 

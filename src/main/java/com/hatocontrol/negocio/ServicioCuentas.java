@@ -15,7 +15,6 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-/** Fincas y cuentas: HU_020 y HU_023. */
 @Service
 @Transactional
 public class ServicioCuentas {
@@ -32,7 +31,6 @@ public class ServicioCuentas {
         this.reloj = reloj;
     }
 
-    /** Crea la finca y la cuenta del ganadero; devuelve el ganadero para iniciar su sesión. */
     public Usuario registrarFinca(CuentaRequest solicitud) {
         if (solicitud.nombreFinca() == null || solicitud.nombreFinca().isBlank()) {
             throw new ReglaNegocioException("Escribe el nombre de la finca.");
@@ -59,7 +57,6 @@ public class ServicioCuentas {
         return usuarios.listarAdministradores(fincaId).stream().map(ServicioCuentas::aRespuesta).toList();
     }
 
-    /** El administrador ya no puede entrar; sus registros se conservan. */
     public void desactivar(Long fincaId, String correo) {
         Usuario admin = administradorDeLaFinca(fincaId, correo);
         admin.desactivar();

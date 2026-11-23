@@ -15,10 +15,6 @@ import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-/**
- * Comprueba la sesión en cada solicitud a /api y aplica los permisos por rol antes de llegar al
- * controlador (RNF19, RNF20). También comprueba que la cuenta siga activa. Una solicitud rechazada no cambia ningún dato.
- */
 @Component
 public class FiltroAutenticacion extends OncePerRequestFilter {
 
@@ -75,7 +71,6 @@ public class FiltroAutenticacion extends OncePerRequestFilter {
         return sesion != null && sesion.getAttribute(FINCA) != null && sesion.getAttribute(ROL) != null;
     }
 
-    /** La finca del usuario que inició sesión: toda consulta se limita a ella (HU_022). */
     public Long obtenerFinca(HttpServletRequest solicitud) {
         HttpSession sesion = solicitud.getSession(false);
         if (sesion == null || sesion.getAttribute(FINCA) == null) {

@@ -23,10 +23,6 @@ import java.util.Map;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-/**
- * Dashboard (HU_012) y reportes (HU_014). Cada fila es una lista de celdas separadas por tabulador.
- * Solo usa datos guardados: nunca estima valores. Sin filas = «sin registros».
- */
 @Service
 @Transactional(readOnly = true)
 public class ServicioReportes {
@@ -52,12 +48,6 @@ public class ServicioReportes {
         this.reloj = reloj;
     }
 
-    /**
-     * Filas del dashboard, la primera celda dice la sección:
-     * resumen·animales|vacunas|enfermedades|tratamientos·cantidad;
-     * actividad·estado(VENCIDA|PROXIMA)·fecha·arete·nombre·tipo·descripción;
-     * peso·arete·nombre·kg·fecha.
-     */
     public ReporteResponse dashboard(Long fincaId) {
         List<Animal> lista = animales.listar(fincaId, null);
         List<String> filas = new ArrayList<>(filasResumen(lista));
@@ -71,7 +61,6 @@ public class ServicioReportes {
         return new ReporteResponse("DASHBOARD", LocalDate.now(reloj), filas);
     }
 
-    /** Animales registrados y eventos realizados por tipo; las actividades programadas no cuentan (HU_012 C2). */
     private List<String> filasResumen(List<Animal> lista) {
         Map<TipoEventoSanitario, Integer> realizados = new EnumMap<>(TipoEventoSanitario.class);
         for (TipoEventoSanitario t : TipoEventoSanitario.values()) {
@@ -95,7 +84,6 @@ public class ServicioReportes {
         return fila("actividad", estado, e.fechaProgramada().toString(), e.codigoArete(), texto(e.nombreAnimal()), e.tipo().name(), e.descripcion());
     }
 
-    /** El último peso de cada animal que tiene mediciones. */
     private List<String> filasUltimoPeso(List<Animal> lista) {
         List<String> filas = new ArrayList<>();
         for (Animal a : lista) {
@@ -108,7 +96,6 @@ public class ServicioReportes {
         return filas;
     }
 
-    /** ANIMALES: arete·nombre·sexo·propósito·edad. SANITARIO: fecha·tipo·descripción·observaciones. PESO: fecha·kg·variación. */
     public ReporteResponse reporte(Long fincaId, ReporteRequest solicitud) {
         String tipo = solicitud.tipo().toUpperCase();
         List<String> filas = new ArrayList<>();

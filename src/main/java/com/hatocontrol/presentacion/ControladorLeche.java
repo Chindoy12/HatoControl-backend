@@ -28,7 +28,6 @@ public class ControladorLeche {
         return servicioLeche.registrar(filtro.obtenerFinca(peticion), solicitud);
     }
 
-    /** periodo: SEMANA, MES o PARTO. fecha (opcional): un día dentro del periodo a consultar. */
     @GetMapping("/{codigoArete}/promedios")
     public PromedioLecheResponse promedios(@PathVariable String codigoArete, @RequestParam String periodo,
             @RequestParam(required = false) LocalDate fecha, HttpServletRequest peticion) {

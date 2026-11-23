@@ -20,7 +20,6 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-/** Animales de la finca: HU_001 a HU_005, HU_013 y HU_015. */
 @Service
 @Transactional
 public class ServicioAnimales {
@@ -151,7 +150,6 @@ public class ServicioAnimales {
         return sexo == Sexo.MACHO ? "engorde o padrón" : "engorde o leche";
     }
 
-    /** Reglas de HU_001 y HU_004 que comparten registrar, actualizar y las crías de un parto. */
     void validarDatos(AnimalRequest solicitud) {
         if (!admite(solicitud.sexo(), solicitud.proposito())) {
             throw new ReglaNegocioException((solicitud.sexo() == Sexo.MACHO ? "Un macho" : "Una hembra")

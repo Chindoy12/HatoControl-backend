@@ -9,7 +9,6 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import org.springframework.stereotype.Repository;
 
-/** Implementa IRepositorioSanitario con JPA sobre PostgreSQL. */
 @Repository
 public class RepositorioSanitarioBD implements IRepositorioSanitario {
 
@@ -32,7 +31,6 @@ public class RepositorioSanitarioBD implements IRepositorioSanitario {
                 .getResultStream().findFirst();
     }
 
-    /** Todos los eventos del animal (realizados y programados), del más reciente al más antiguo. */
     @Override
     public List<RegistroSanitario> historial(Long animalId) {
         return em.createQuery("""

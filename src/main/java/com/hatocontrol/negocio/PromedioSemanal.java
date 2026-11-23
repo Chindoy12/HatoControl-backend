@@ -5,7 +5,6 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import org.springframework.stereotype.Component;
 
-/** Semana de lunes a domingo que contiene la fecha. */
 @Component
 public class PromedioSemanal extends PeriodoPromedio {
 

@@ -19,7 +19,6 @@ public class ControladorReportes {
         this.filtro = filtro;
     }
 
-    /** Solo el ganadero: lo controla FiltroAutenticacion con ControlPermisos. */
     @GetMapping("/dashboard")
     public ReporteResponse dashboard(HttpServletRequest peticion) {
         return servicioReportes.dashboard(filtro.obtenerFinca(peticion));

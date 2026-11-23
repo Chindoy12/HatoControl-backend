@@ -7,7 +7,6 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import org.springframework.stereotype.Repository;
 
-/** Implementa IRepositorioAnimales con JPA sobre PostgreSQL. */
 @Repository
 public class RepositorioAnimalesBD implements IRepositorioAnimales {
 
@@ -31,7 +30,6 @@ public class RepositorioAnimalesBD implements IRepositorioAnimales {
                 .getResultStream().findFirst();
     }
 
-    /** El filtro busca en el arete y en el nombre; vacío o null lista todos los animales de la finca. */
     @Override
     public List<Animal> listar(Long fincaId, String filtro) {
         String texto = filtro == null ? "" : filtro.trim().toLowerCase();

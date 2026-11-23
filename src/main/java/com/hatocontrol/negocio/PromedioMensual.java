@@ -4,7 +4,6 @@ import com.hatocontrol.modelo.Animal;
 import java.time.LocalDate;
 import org.springframework.stereotype.Component;
 
-/** Mes calendario que contiene la fecha. */
 @Component
 public class PromedioMensual extends PeriodoPromedio {
 

@@ -8,10 +8,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
-/**
- * Protección CSRF para la aplicación web y codificador de contraseñas (clase técnica autorizada en la Fase 7).
- * La sesión y los permisos los revisa FiltroAutenticacion.
- */
 @Configuration
 @EnableWebSecurity
 public class ConfiguracionSeguridad {

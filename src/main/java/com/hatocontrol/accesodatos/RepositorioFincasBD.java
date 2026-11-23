@@ -6,7 +6,6 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import org.springframework.stereotype.Repository;
 
-/** Implementa IRepositorioFincas con JPA sobre PostgreSQL. */
 @Repository
 public class RepositorioFincasBD implements IRepositorioFincas {
 

@@ -5,7 +5,6 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Component;
 
-/** Envía el correo de recuperación por SMTP; en producción, Amazon SES (Fase 6). */
 @Component
 public class AdaptadorCorreo implements IServicioCorreo {
 

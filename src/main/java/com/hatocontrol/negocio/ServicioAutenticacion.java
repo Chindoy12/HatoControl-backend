@@ -20,7 +20,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-/** Ingreso y recuperación de contraseña: HU_021 y HU_024 (RNF19, RNF22, RNF23). */
 @Service
 @Transactional
 public class ServicioAutenticacion {
@@ -47,7 +46,6 @@ public class ServicioAutenticacion {
         this.urlFrontend = urlFrontend;
     }
 
-    /** Devuelve el usuario si el correo y la contraseña son correctos y la cuenta está activa. */
     @Transactional(readOnly = true)
     public Usuario iniciarSesion(IngresoRequest solicitud) {
         Usuario usuario = usuarios.buscarPorCorreo(solicitud.correo().trim())
@@ -59,10 +57,6 @@ public class ServicioAutenticacion {
         return usuario;
     }
 
-    /**
-     * Se llama en cada solicitud con sesión: si el ganadero desactivó la cuenta mientras estaba abierta,
-     * la sesión deja de servir de inmediato (observación O-01 de la Fase 11, RNF20).
-     */
     @Transactional(readOnly = true)
     public void validarCuentaActiva(Long usuarioId) {
         boolean activa = usuarioId != null && usuarios.buscarPorId(usuarioId).map(Usuario::isActivo).orElse(false);
@@ -71,15 +65,10 @@ public class ServicioAutenticacion {
         }
     }
 
-    /** La sesión vive en el servidor web: el controlador la invalida. Aquí no queda nada por limpiar. */
     public void cerrarSesion() {
         // Sin estado en el negocio.
     }
 
-    /**
-     * Envía el enlace solo si el correo es de un ganadero activo, pero responde igual en todos los casos
-     * para no revelar qué correos existen (HU_024).
-     */
     public void recuperarContrasena(String correoIngresado) {
         if (correoIngresado == null || correoIngresado.isBlank()) {
             throw new ReglaNegocioException("Escribe el correo de tu cuenta.");
@@ -89,7 +78,6 @@ public class ServicioAutenticacion {
                 .ifPresent(this::enviarEnlace);
     }
 
-    /** Guarda la contraseña nueva si el enlace existe, no ha vencido y no se ha usado; luego lo anula. */
     public void restablecerConEnlace(String token, String contrasenaNueva) {
         TokenRecuperacion registro = tokens.buscarVigente(sha256(token == null ? "" : token))
                 .orElseThrow(() -> new ReglaNegocioException("El enlace venció o ya se usó. Solicita un enlace nuevo."));

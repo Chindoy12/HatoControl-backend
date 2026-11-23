@@ -19,11 +19,6 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.core.JdbcTemplate;
 
-/**
- * RNF24 (al menos 100 fincas) y RNF10 (respuesta en menos de 3 segundos).
- * Crea 100 fincas de prueba con 40 animales cada una y su historial de un año, y mide las operaciones
- * de una de ellas. Imprime una tabla con los tiempos para el informe de pruebas.
- */
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
         properties = "server.servlet.session.cookie.secure=false")
 @Import(SeguridadTest.CorreoDePrueba.class)
@@ -41,10 +36,6 @@ class CapacidadTest {
     @Autowired
     DataSource fuenteDatos;
 
-    /**
-     * Por finca: 40 animales (20 hembras de leche con un parto hace 200 días y leche diaria desde entonces,
-     * 20 machos de engorde), 6 pesos y 3 eventos sanitarios por animal y 1 actividad programada cada 4 animales.
-     */
     private void crearFincas(JdbcTemplate bd) {
         String hash = bd.queryForObject("select hash_contrasena from usuarios where correo = ?", String.class,
                 CriteriosAceptacionTest.GANADERO);
@@ -89,7 +80,6 @@ class CapacidadTest {
                 where f.nombre like 'Capacidad %' and a.id % 4 = 0""");
     }
 
-    /** Peor tiempo (ms) de varias repeticiones; la primera cuenta como las demás. */
     private static long medir(Supplier<Respuesta> operacion, int estadoEsperado) {
         long peor = 0;
         for (int i = 0; i < REPETICIONES; i++) {

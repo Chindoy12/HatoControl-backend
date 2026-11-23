@@ -7,7 +7,6 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import org.springframework.stereotype.Repository;
 
-/** Implementa IRepositorioTokens con JPA sobre PostgreSQL. */
 @Repository
 public class RepositorioTokensBD implements IRepositorioTokens {
 

@@ -16,7 +16,6 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-/** Control sanitario: HU_006 a HU_009. */
 @Service
 @Transactional
 public class ServicioSanitario {
@@ -31,7 +30,6 @@ public class ServicioSanitario {
         this.reloj = reloj;
     }
 
-    /** Vacuna, enfermedad o tratamiento ya realizado (HU_006). */
     public EventoSanitarioResponse registrarEvento(Long fincaId, String codigoArete, EventoSanitarioRequest solicitud) {
         Animal animal = animalSeleccionado(fincaId, codigoArete);
         LocalDate fecha = solicitud.fechaRealizacion();
@@ -48,7 +46,6 @@ public class ServicioSanitario {
         return aRespuesta(registro);
     }
 
-    /** Actividad para hacer después (HU_008). */
     public EventoSanitarioResponse programar(Long fincaId, String codigoArete, EventoSanitarioRequest solicitud) {
         Animal animal = animalSeleccionado(fincaId, codigoArete);
         LocalDate fecha = solicitud.fechaProgramada();
@@ -83,7 +80,6 @@ public class ServicioSanitario {
         return aRespuesta(registro);
     }
 
-    /** Solo eventos realizados, del más reciente al más antiguo; las programadas no aparecen (HU_007). */
     @Transactional(readOnly = true)
     public List<EventoSanitarioResponse> historial(Long fincaId, String codigoArete, TipoEventoSanitario tipo) {
         Animal animal = buscar(fincaId, codigoArete);

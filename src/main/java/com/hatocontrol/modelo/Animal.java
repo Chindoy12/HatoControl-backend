@@ -102,7 +102,6 @@ public class Animal {
 
     // ---- Comportamiento de la vista lógica ----
 
-    /** Edad en meses cumplidos; null si no hay fecha de nacimiento («sin registros»). */
     public Integer calcularEdadMeses(LocalDate hoy) {
         if (fechaNacimiento == null) {
             return null;
@@ -110,7 +109,6 @@ public class Animal {
         return (int) Period.between(fechaNacimiento, hoy).toTotalMonths();
     }
 
-    /** Macho: engorde o padrón. Hembra: engorde o leche. */
     public boolean admiteProposito(Proposito p) {
         if (p == null || sexo == null) {
             return false;
