@@ -21,9 +21,9 @@ public class ManejadorExcepciones {
     @ExceptionHandler(HatoControlException.class)
     public ResponseEntity<Map<String, Object>> manejarError(HatoControlException e) {
         int estado = switch (e) {
-            case RecursoNoEncontradoException noExiste -> HttpStatus.NOT_FOUND.value();
-            case AccesoDenegadoException sinPermiso -> HttpStatus.FORBIDDEN.value();
-            case ReglaNegocioException regla -> HttpStatus.UNPROCESSABLE_CONTENT.value();
+            case RecursoNoEncontradoException _ -> HttpStatus.NOT_FOUND.value();
+            case AccesoDenegadoException _ -> HttpStatus.FORBIDDEN.value();
+            case ReglaNegocioException _ -> HttpStatus.UNPROCESSABLE_CONTENT.value();
         };
         return respuesta(estado, e.getMessage(), Map.of());
     }
